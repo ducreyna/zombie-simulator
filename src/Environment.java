@@ -1,5 +1,8 @@
 import sim.engine.SimState;
+import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.SparseGrid2D;
+import sim.util.Bag;
+import sim.util.Int2D;
 
 public class Environment extends SimState
 {
@@ -8,6 +11,9 @@ public class Environment extends SimState
 	public int gridHeight = 100;
 	public int gridWidth = 100;
 
+    public DoubleGrid2D perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight, 0);
+	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
+	
 	public int humanCount = 100;
 	public int zombieCount = 25;
 	public int bonusPackCount = 5;
@@ -15,6 +21,46 @@ public class Environment extends SimState
 	Human[] humans;
 	Zombie[] zombies;
 	BonusPack[] bonusPacks;
+
+	public Environment(long seed)
+	{
+		super(seed);
+		humans = new Human[humanCount];
+		zombies = new Zombie[zombieCount];
+		bonusPacks = new BonusPack[bonusPackCount];
+	}
+
+	// Resets and starts a simulation
+	public void start()
+	{
+		super.start();
+
+		// it's faster to make a new sparse field than to clear it
+		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
+		grid = new SparseGrid2D(gridWidth, gridHeight);
+		
+		setHumanCount(100);
+		setZombieCount(25);
+		setBonusPackCount(5);
+
+		humans = new Human[humanCount];
+		zombies = new Zombie[zombieCount];
+		bonusPacks = new BonusPack[bonusPackCount];
+		
+		// TODO : add randomly humans, zombies and bonusPacks
+        
+		for(int i = 0; i < humanCount; i++)
+        {
+	        humans[i] = new Human();
+			Int2D location = new Int2D(random.nextInt(gridWidth), random.nextInt(gridHeight));
+			Bag bag = null;
+			while ((bag = grid.getObjectsAtLocation(location.x, location.y)) != null)
+			{
+				location = new Int2D(random.nextInt(gridWidth), random.nextInt(gridWidth));
+			}
+	        grid.setObjectLocation(humans[i], location.x, location.y);
+	        schedule.scheduleRepeating(humans[i]);
+        }
 
 	public int getGridHeight()
 	{
@@ -57,35 +103,6 @@ public class Environment extends SimState
 	{
 		if (_val >= 0)
 			bonusPackCount = _val;
-	}
-
-	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
-
-	public Environment(long seed)
-	{
-		super(seed);
-		humans = new Human[humanCount];
-		zombies = new Zombie[zombieCount];
-		bonusPacks = new BonusPack[bonusPackCount];
-	}
-
-	// Resets and starts a simulation
-	public void start()
-	{
-		super.start();
-
-		// it's faster to make a new sparse field than to clear it
-		grid = new SparseGrid2D(gridWidth, gridHeight);
-		
-		setHumanCount(100);
-		setZombieCount(25);
-		setBonusPackCount(5);
-
-		humans = new Human[humanCount];
-		zombies = new Zombie[zombieCount];
-		bonusPacks = new BonusPack[bonusPackCount];
-		
-		// TODO : add randomly humans, zombies and bonusPacks
 	}
 	
 	public static void main(String[] args)
