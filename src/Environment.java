@@ -1,5 +1,12 @@
+import sim.engine.SimState;
 
-public class Environment 
+
+public class Environment extends SimState
 {
+
+	public Environment(long seed) 
+	{
+		super(seed);
+	}
 
 }
