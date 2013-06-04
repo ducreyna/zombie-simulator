@@ -7,14 +7,20 @@ import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
+import sim.portrayal.grid.HexaValueGridPortrayal2D;
+import sim.portrayal.simple.MovablePortrayal2D;
+import sim.portrayal.simple.OvalPortrayal2D;
+import sim.util.gui.ColorMap;
+import sim.util.gui.SimpleColorMap;
 
 public class EnvironmentUI extends GUIState
 {
-  public Display2D display;
+	public Display2D display;
 	public JFrame displayFrame;
 
 	HexaSparseGridPortrayal2D environmentPortrayal = new HexaSparseGridPortrayal2D();
-
+    //HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception");
+	
 	public static void main(String[] args)
 	{
 		new EnvironmentUI().createController();
@@ -52,14 +58,25 @@ public class EnvironmentUI extends GUIState
 		Environment env = (Environment) state;
 		
 		// TODO : define the portrayals
-
+        //ColorMap map = new SimpleColorMap(32000, 32000, Color.red, Color.red);
+        //perceptionPortrayal.setField(env.perceptionGrid);
+        //perceptionPortrayal.setMap(map);
+        
+        environmentPortrayal.setField(env.grid);
+        environmentPortrayal.setPortrayalForClass(Human.class, getHumanPortrayal());
+        
 		// reschedule the displayer
 		display.reset();
 
 		// redraw the display
 		display.repaint();
 	}
-
+	
+	private OvalPortrayal2D getHumanPortrayal() {
+		OvalPortrayal2D o = new OvalPortrayal2D(Color.white);
+		return o;
+	}
+	
 	/*
 	 * The ratio of the width of a hexagon to its height: 1 / Sin(60 degrees),
 	 * otherwise known as 2 / Sqrt(3)
@@ -94,9 +111,11 @@ public class EnvironmentUI extends GUIState
 		displayFrame.setVisible(true);
 
 		// TODO : attach the portrayals
+		//display.attach(perceptionPortrayal, "Human Perception");
+		display.attach(environmentPortrayal, "Environment");
 
 		// specify the backdrop color -- what gets painted behind the displays
-		display.setBackdrop(Color.black);
+		display.setBackdrop(Color.green);
 	}
 
 	public void quit()
