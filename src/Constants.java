@@ -10,4 +10,17 @@ public class Constants
 
 	public static int ZOMBIE_SPEED_MAX = 4;
 	public static int ZOMBIE_PERCEPTION_MAX = 6;
+	
+	public static enum Direction
+	{
+		RIGHT,
+		LEFT,
+		TOP,
+		BOTTOM,
+		TOPLEFT,
+		TOPRIGHT,
+		BOTTOMLEFT,
+		BOTTOMRIGHT;
+		
+	}
 }
