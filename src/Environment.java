@@ -39,7 +39,7 @@ public class Environment extends SimState
 		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
-		setHumanCount(100);
+		setHumanCount(5);
 		setZombieCount(25);
 		setBonusPackCount(5);
 
@@ -61,7 +61,7 @@ public class Environment extends SimState
 	        grid.setObjectLocation(humans[i], location.x, location.y);
 	        schedule.scheduleRepeating(humans[i]);
         }
-
+	}
 	public int getGridHeight()
 	{
 		return gridHeight;

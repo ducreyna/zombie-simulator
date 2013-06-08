@@ -10,8 +10,8 @@ import sim.util.IntBag;
 
 public class Zombie implements Steppable
 {
-	private int x;
-	private int y;
+	public int x;
+	public int y;
 	private int speed = Constants.ZOMBIE_SPEED_MAX;
 	private int perception = Constants.ZOMBIE_PERCEPTION_MAX;
 	private Stoppable stoppable;
