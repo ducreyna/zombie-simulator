@@ -64,12 +64,16 @@ public class Human extends Element implements Steppable
 					if(neighboursArray.get(i).get(j) instanceof Zombie)
 					{
 						move(environment, ((Zombie)neighboursArray.get(i).get(j)).x, ((Zombie)neighboursArray.get(i).get(j)).y);
+						break;
 					}
-					else
+					else if(neighboursArray.get(i).get(j) instanceof Human)
 					{
-						doRandomMove = true;
+						move(environment, ((Human)neighboursArray.get(i).get(j)).x, ((Human)neighboursArray.get(i).get(j)).y);
+						break;
 					}
 				}
+				if(!doRandomMove)
+					break;
 			}
 			
 			if(doRandomMove)
@@ -130,16 +134,18 @@ public class Human extends Element implements Steppable
 	private void move(Environment model, int l, int c)
 	{
 		this.numberOfRandom = 0;
-		int distance = Math.max(Math.abs(this.x - l), Math.abs(this.y - c));
+		double distance = Math.sqrt(Math.pow(l - this.x, 2) + Math.pow(c - this.y, 2));
 		
-		if(distance <= this.speed)
+		this.speed = (int)(Math.random() * 5) + 1;
+		
+		if(distance > 0 && distance <= this.speed)
 		{
 			// We move directly to the case (l,c)
 			model.grid.setObjectLocation(this, model.grid.stx(l), model.grid.sty(c));
 			x = model.grid.stx(l);
 			y = model.grid.sty(c);
 		}
-		else 
+		else if(distance > 0)
 		{
 			if(l == this.x) // If we are on the same column
 			{

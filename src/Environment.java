@@ -1,4 +1,5 @@
 import sim.engine.SimState;
+import sim.engine.Stoppable;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Bag;
@@ -39,7 +40,7 @@ public class Environment extends SimState
 		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
-		setHumanCount(2);
+		setHumanCount(5);
 		setZombieCount(25);
 		setBonusPackCount(5);
 
@@ -63,7 +64,8 @@ public class Environment extends SimState
 			humans[i].y = location.y;
 			
 	        grid.setObjectLocation(humans[i], location.x, location.y);
-	        schedule.scheduleRepeating(humans[i]);
+	        Stoppable stoppable  = schedule.scheduleRepeating(humans[i]);
+	        humans[i].stoppable = stoppable;
         }
 	}
 	public int getGridHeight()
