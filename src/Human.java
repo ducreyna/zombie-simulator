@@ -13,12 +13,15 @@ public class Human extends Element implements Steppable
 {
 //	public int x, y;
 	public Stoppable stoppable;
+	private Environment environment;
 	
 	private int speed = Constants.HUMAN_SPEED_MAX;
 	private int perception = Constants.HUMAN_PERCEPTION_MAX;
 	private int life = Constants.HUMAN_LIFE_MAX;
-	private int weaponLevel = Constants.HUMAN_WEAPON_LEVEL;
-	private int munitions = Constants.HUMAN_MUNITIONS_MAX;
+	private int weaponLevel = 1;
+	private int munitions = 10;
+	private int maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
+	private int XP = 0;
 	
 	private enum Direction
 	{
@@ -44,41 +47,208 @@ public class Human extends Element implements Steppable
 	@Override
 	public void step(SimState state) 
 	{
-		Environment environment = (Environment)state;
-		boolean doRandomMove = true;
+		this.environment = (Environment)state;
 		
 		if(this.life != 0)
 		{
-			// Perception
-			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
-			
-			neighboursArray = this.perception();
-				
-			for(int i = 0; i < neighboursArray.size(); i++)
+			// Weapon Upgrade
+			if(XP >= Constants.HUMAN_XP_MAX)
 			{
-//				System.out.println(neighboursArray.get(i).size());
-				for(int j = 0; j < neighboursArray.get(i).size(); j++)
+				if(weaponLevel != Constants.HUMAN_WEAPON_LEVEL_MAX)
 				{
-//					System.out.println(neighboursArray.get(i).get(j));
-					doRandomMove = false;
-					if(neighboursArray.get(i).get(j) instanceof Zombie)
-					{
-						move(environment, ((Zombie)neighboursArray.get(i).get(j)).x, ((Zombie)neighboursArray.get(i).get(j)).y);
-						break;
-					}
-					else if(neighboursArray.get(i).get(j) instanceof Human)
-					{
-						move(environment, ((Human)neighboursArray.get(i).get(j)).x, ((Human)neighboursArray.get(i).get(j)).y);
-						break;
-					}
+					weaponLevel ++;
+					upgradeWeapon();
 				}
-				if(!doRandomMove)
-					break;
+				XP = 0;
 			}
 			
-			if(doRandomMove)
-				randomMove(environment);
+			// Perception
+			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
+			neighboursArray = this.perception();
 			
+			if(this.munitions <= 5 || this.life <= 5)
+			{
+				// We need to find munitions or points of life
+				BonusPack bonusPack = null;
+				boolean bonusPackFound = false;
+				boolean zombieFound = false;
+				
+				for(int i = 0; i < neighboursArray.size(); i++)
+				{
+					for(int j = 0; j < neighboursArray.get(i).size(); j++)
+					{
+						if(neighboursArray.get(i).get(j) instanceof Zombie)
+						{
+							if((i == 0 || i == 1) && this.munitions > 0)
+							{
+								// Zombie very close
+								zombieFound = true;
+								shoot((Zombie) neighboursArray.get(i).get(j));
+								break;
+							}
+						}
+						else if(neighboursArray.get(i).get(j) instanceof BonusPack)
+						{
+							bonusPackFound = true;
+							bonusPack = (BonusPack) neighboursArray.get(i).get(j);
+							if(i == 0 || i == 1)
+							{
+								// We are enough close to pick up the bonus pack
+								// Weapon
+								if((bonusPack.getWeaponUpgrade() + this.weaponLevel) > Constants.HUMAN_WEAPON_LEVEL_MAX)
+								{
+									this.weaponLevel = Constants.HUMAN_WEAPON_LEVEL_MAX;
+								}
+								else
+								{
+									this.weaponLevel += bonusPack.getWeaponUpgrade();
+								}
+								upgradeWeapon();
+								// Munitions
+								if((bonusPack.getMunitions() > this.maxMunitions)
+										|| ((bonusPack.getMunitions() + this.munitions) > this.maxMunitions))
+								{
+									this.munitions = maxMunitions;
+								}
+								else
+								{
+									this.munitions += bonusPack.getMunitions();
+								}
+								// Life
+								if((bonusPack.getLife() + this.life) > Constants.HUMAN_LIFE_MAX)
+								{
+									this.life = Constants.HUMAN_LIFE_MAX;
+								}
+								else
+								{
+									this.life += bonusPack.getLife();
+								}
+								
+								// Removing bonus pack
+								environment.grid.remove(bonusPack);
+								bonusPack.stoppable.stop();
+							}
+							break;
+						}
+					}
+					if(bonusPackFound || zombieFound)
+						break;
+				}
+				
+				if(bonusPack != null)
+				{
+					// We move to the bonus pack
+					move(environment, bonusPack.x, bonusPack.y);
+				}
+				else
+				{
+					// We continue the research
+					randomMove(environment);
+				}
+			}
+			else
+			{
+				boolean doRandomMove = true;
+				boolean bunkerFound = false;
+				boolean zombieFound = false;
+				ArrayList<Human> humansGroup = new ArrayList<Human>();
+				Bunker bunker = null;
+				
+				// We have enough munitions and life
+				for(int i = 0; i < neighboursArray.size(); i++)
+				{
+//					System.out.println(neighboursArray.get(i).size());
+					for(int j = 0; j < neighboursArray.get(i).size(); j++)
+					{
+//						System.out.println(neighboursArray.get(i).get(j));
+						doRandomMove = false;
+						
+						if(i == 0)
+						{
+							// Elements on the same case
+							if(neighboursArray.get(i).get(j) instanceof Bunker)
+							{
+								bunkerFound = true;
+								bunker = (Bunker) neighboursArray.get(i).get(j);
+							}
+							else if(neighboursArray.get(i).get(j) instanceof Human)
+							{
+								humansGroup.add((Human)neighboursArray.get(i).get(j));
+							}
+							else if(neighboursArray.get(i).get(j) instanceof Zombie)
+							{
+								zombieFound = true;
+								shoot((Zombie)neighboursArray.get(i).get(j));
+								break;
+							}
+						}
+						else
+						{
+							// Default behaviour
+							if(neighboursArray.get(i).get(j) instanceof Zombie)
+							{
+								shoot((Zombie)neighboursArray.get(i).get(j));
+								break;
+							}
+							else if(neighboursArray.get(i).get(j) instanceof Bunker)
+							{
+								bunkerFound = true;
+								bunker = (Bunker) neighboursArray.get(i).get(j);
+							}
+							else if(neighboursArray.get(i).get(j) instanceof Human)
+							{
+								humansGroup.add((Human) neighboursArray.get(i).get(j));
+//								move(environment, ((Human)neighboursArray.get(i).get(j)).x, ((Human)neighboursArray.get(i).get(j)).y);
+//								break;
+							}
+						}
+					}
+					
+					if(i == 0)
+					{
+						// Elements on the same case
+						if(!bunkerFound && !zombieFound)
+						{
+							 if(humansGroup.size() >= 1)
+							 {
+								// TODO Construire un bunker
+							 }
+						}
+						else if(!bunker.isInBunker(this) && !bunker.isFull())
+						{
+							// We integrate the bunker
+							bunker.upgrade(this);
+						}
+						bunkerFound = false;
+						bunker = null;
+						humansGroup.clear();
+					}
+					else
+					{
+						if(bunkerFound && bunker.isFull())
+						{
+							// Check humans in the bunker
+							for(int k = 0; k < humansGroup.size(); k++)
+							{
+								if(!bunker.isInBunker(humansGroup.get(k)))
+								{
+									move(environment, humansGroup.get(k).x, humansGroup.get(k).y);
+									break;
+								}
+							}
+						}
+						else if(!humansGroup.isEmpty())
+						{
+							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
+						}
+					}
+					
+					if(!doRandomMove)
+						break;
+				}
+				if(doRandomMove)
+					randomMove(environment);
+			}
 		}
 		else
 		{
@@ -96,6 +266,7 @@ public class Human extends Element implements Steppable
 	private ArrayList<Bag> perception(Bag neighbours, IntBag posX, IntBag posY) 
 	{
 		ArrayList<Bag> result = new ArrayList<Bag>();
+//		this.perception = (int)(Math.random() * Constants.HUMAN_PERCEPTION_MAX) + 1;
 		
 		for(int i = 0; i <= this.perception; i++)
 		{
@@ -111,10 +282,9 @@ public class Human extends Element implements Steppable
 				int xB = ((Element)neighbours.get(i)).x;
 				int yB = ((Element)neighbours.get(i)).y;
 				double distance = Math.sqrt(Math.pow(xB - this.x, 2) + Math.pow(yB - this.y, 2));
-				
 				if(distance > (this.perception + 1))
 				{
-					distance = 100 - distance;
+					distance = this.environment.gridWidth - distance;
 				}
 				result.get((int)distance).add(object);
 			}
@@ -126,9 +296,82 @@ public class Human extends Element implements Steppable
 	/**
 	 * Private function to shoot on a zombie
 	 */
-	private void shoot()
+	private void shoot(Zombie zombie)
 	{
-		
+		if(this.munitions > 0)
+		{
+			int randomBody; 
+			
+			if(weaponLevel == 1)
+			{
+				randomBody = (int)(Math.random() * (weaponLevel + 8));
+			}
+			else if(weaponLevel == 2)
+			{
+				randomBody = (int)(Math.random() * (weaponLevel + 6));
+			}
+			else if(weaponLevel == 3)
+			{
+				randomBody = (int)(Math.random() * (weaponLevel + 4));
+			}
+			else if(weaponLevel == 4)
+			{
+				randomBody = (int)(Math.random() * (weaponLevel + 2));
+			}
+			else
+			{
+				// Weapon Max level
+				randomBody = (int)(Math.random() * weaponLevel);
+			}
+			
+			switch(randomBody)
+			{
+			case 1:
+				// Touch a leg
+				zombie.bodyShot(Zombie.BODY_PART.LEG);
+				XP ++;
+				break;
+			case 2:
+				// Touch an arm
+				zombie.bodyShot(Zombie.BODY_PART.ARM);
+				XP ++;
+				break;
+			case 3:
+				// Touch a trunk
+				zombie.bodyShot(Zombie.BODY_PART.TRUNK);
+				XP += 2;
+				break;
+			case 4:
+				// Headshot
+				zombie.headShot();
+				XP += 5;
+				break;
+			default:
+				// Shot missed
+				break;
+			}
+			munitions --;
+		}
+	}
+	
+	private void upgradeWeapon()
+	{
+		if(weaponLevel == 2)
+		{
+			maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_2;
+		}
+		else if(weaponLevel == 3)
+		{
+			maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_3;
+		}
+		else if(weaponLevel == 4)
+		{
+			maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_4;
+		}
+		else
+		{
+			maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_5;
+		}
 	}
 	
 	private void move(Environment model, int l, int c)
@@ -136,7 +379,7 @@ public class Human extends Element implements Steppable
 		this.numberOfRandom = 0;
 		double distance = Math.sqrt(Math.pow(l - this.x, 2) + Math.pow(c - this.y, 2));
 		
-		this.speed = (int)(Math.random() * 5) + 1;
+		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
 		
 		if(distance > 0 && distance <= this.speed)
 		{

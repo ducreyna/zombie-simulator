@@ -9,8 +9,8 @@ public class Environment extends SimState
 {
 	private static final long serialVersionUID = 1;
 
-	public int gridHeight = 100;
-	public int gridWidth = 100;
+	public int gridHeight = 60;
+	public int gridWidth = 60;
 
     public DoubleGrid2D perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight, 0);
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
@@ -40,7 +40,7 @@ public class Environment extends SimState
 		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
-		setHumanCount(5);
+		setHumanCount(20);
 		setZombieCount(25);
 		setBonusPackCount(5);
 
