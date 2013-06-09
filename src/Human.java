@@ -241,6 +241,9 @@ public class Human extends Element implements Steppable
 						{
 							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
 						}
+						bunkerFound = false;
+						bunker = null;
+						humansGroup.clear();
 					}
 					
 					if(!doRandomMove)
