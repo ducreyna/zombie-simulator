@@ -10,9 +10,10 @@ import sim.util.IntBag;
 
 public class Zombie extends Element implements Steppable
 {
+	public Stoppable stoppable;
+	
 	private int speed = Constants.ZOMBIE_SPEED_MAX;
 	private int perception = Constants.ZOMBIE_PERCEPTION_MAX;
-	private Stoppable stoppable;
 	private boolean isMaximumShot = false;
 	private boolean isAlive = true;
 	private boolean isBlockedForOneStep = false;
