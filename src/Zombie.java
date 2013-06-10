@@ -44,9 +44,9 @@ public class Zombie extends Element implements Steppable
 		else
 		{
 			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
-			@SuppressWarnings("rawtypes")
-			Iterator iterator = neighbours.iterator();
-			neighboursArray = this.perception();
+			//@SuppressWarnings("rawtypes")
+			//Iterator iterator = neighbours.iterator();
+			//neighboursArray = this.perception();
 			
 		}
 	}

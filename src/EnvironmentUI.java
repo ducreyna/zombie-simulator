@@ -1,5 +1,6 @@
 import java.awt.Color;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import sim.display.Controller;
@@ -7,6 +8,7 @@ import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
+import sim.portrayal.simple.ImagePortrayal2D;
 import sim.portrayal.simple.OvalPortrayal2D;
 
 public class EnvironmentUI extends GUIState
@@ -59,10 +61,14 @@ public class EnvironmentUI extends GUIState
         //perceptionPortrayal.setMap(map);
         
         environmentPortrayal.setField(env.grid);
-        environmentPortrayal.setPortrayalForClass(Human.class, new OvalPortrayal2D(Color.white));
-        environmentPortrayal.setPortrayalForClass(Zombie.class, new OvalPortrayal2D(Color.gray));
+        ImageIcon humanIcon = new ImageIcon("ressources/human_bottom.png");
+        ImageIcon zombieIcon = new ImageIcon("ressources/zombie_bottom.png");
+        ImageIcon bunkerIcon = new ImageIcon("ressources/bunker_2.png");
+   
+        environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon));
+        environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));
         environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Color.black));
-        environmentPortrayal.setPortrayalForClass(Bunker.class, new OvalPortrayal2D(Color.darkGray));
+        environmentPortrayal.setPortrayalForClass(Bunker.class, new ImagePortrayal2D(bunkerIcon));
         
 		// reschedule the displayer
 		display.reset();
