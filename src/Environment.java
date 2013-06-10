@@ -15,9 +15,9 @@ public class Environment extends SimState
     public DoubleGrid2D perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight, 0);
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
 	
-	public int humanCount = 100;
-	public int zombieCount = 25;
-	public int bonusPackCount = 5;
+	private int humanCount;
+	private int zombieCount;
+	private int bonusPackCount;
 
 	Human[] humans;
 	Zombie[] zombies;
@@ -47,18 +47,13 @@ public class Environment extends SimState
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];
 		bonusPacks = new BonusPack[bonusPackCount];
-		
-		// TODO : add randomly humans, zombies and bonusPacks
-        
+		        
+		// add randomly humans 
 		for(int i = 0; i < humanCount; i++)
         {
 	        humans[i] = new Human();
-			Int2D location = new Int2D(random.nextInt(gridWidth), random.nextInt(gridHeight));
-			Bag bag = null;
-			while ((bag = grid.getObjectsAtLocation(location.x, location.y)) != null)
-			{
-				location = new Int2D(random.nextInt(gridWidth), random.nextInt(gridWidth));
-			}
+
+	        Int2D location = getEmpty2DLocation();
 			
 			humans[i].x = location.x;
 			humans[i].y = location.y;
@@ -67,7 +62,38 @@ public class Environment extends SimState
 	        Stoppable stoppable  = schedule.scheduleRepeating(humans[i]);
 	        humans[i].stoppable = stoppable;
         }
+		
+		// add randomly zombies 
+		for(int i = 0; i < zombieCount; i++)
+        {
+	        zombies[i] = new Zombie();
+	        
+	        Int2D location = getEmpty2DLocation();
+			
+			zombies[i].x = location.x;
+			zombies[i].y = location.y;
+			
+	        grid.setObjectLocation(zombies[i], location.x, location.y);
+	        Stoppable stoppable  = schedule.scheduleRepeating(zombies[i]);
+	        zombies[i].stoppable = stoppable;
+        }
+		
+		// add randomly bonus packs
+		for(int i = 0; i < bonusPackCount; i++)
+        {
+	        bonusPacks[i] = new BonusPack();
+	        
+	        Int2D location = getEmpty2DLocation();
+			
+			bonusPacks[i].x = location.x;
+			bonusPacks[i].y = location.y;
+			
+	        grid.setObjectLocation(bonusPacks[i], location.x, location.y);
+	        Stoppable stoppable  = schedule.scheduleRepeating(bonusPacks[i]);
+	        bonusPacks[i].stoppable = stoppable;
+        }
 	}
+	
 	public int getGridHeight()
 	{
 		return gridHeight;
@@ -109,6 +135,20 @@ public class Environment extends SimState
 	{
 		if (_val >= 0)
 			bonusPackCount = _val;
+	}
+	
+	/*
+	 * La localisation renvoyée est telle qu'il n'y a pas d'autre objet au même endroit.
+	 */
+	private Int2D getEmpty2DLocation()
+	{
+		Int2D location = new Int2D(random.nextInt(gridWidth), random.nextInt(gridHeight));
+		Bag bag = null;
+		while ((bag = grid.getObjectsAtLocation(location.x, location.y)) != null)
+		{
+			location = new Int2D(random.nextInt(gridWidth), random.nextInt(gridWidth));
+		}
+		return location;
 	}
 	
 	public static void main(String[] args)

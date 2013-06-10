@@ -63,18 +63,15 @@ public class EnvironmentUI extends GUIState
         //perceptionPortrayal.setMap(map);
         
         environmentPortrayal.setField(env.grid);
-        environmentPortrayal.setPortrayalForClass(Human.class, getHumanPortrayal());
+        environmentPortrayal.setPortrayalForClass(Human.class, new OvalPortrayal2D(Color.white));
+        environmentPortrayal.setPortrayalForClass(Zombie.class, new OvalPortrayal2D(Color.gray));
+        environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Color.black));
         
 		// reschedule the displayer
 		display.reset();
 
 		// redraw the display
 		display.repaint();
-	}
-	
-	private OvalPortrayal2D getHumanPortrayal() {
-		OvalPortrayal2D o = new OvalPortrayal2D(Color.white);
-		return o;
 	}
 	
 	/*
