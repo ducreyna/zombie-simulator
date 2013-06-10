@@ -7,11 +7,7 @@ import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
-import sim.portrayal.grid.HexaValueGridPortrayal2D;
-import sim.portrayal.simple.MovablePortrayal2D;
 import sim.portrayal.simple.OvalPortrayal2D;
-import sim.util.gui.ColorMap;
-import sim.util.gui.SimpleColorMap;
 
 public class EnvironmentUI extends GUIState
 {
@@ -66,6 +62,7 @@ public class EnvironmentUI extends GUIState
         environmentPortrayal.setPortrayalForClass(Human.class, new OvalPortrayal2D(Color.white));
         environmentPortrayal.setPortrayalForClass(Zombie.class, new OvalPortrayal2D(Color.gray));
         environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Color.black));
+        environmentPortrayal.setPortrayalForClass(Bunker.class, new OvalPortrayal2D(Color.darkGray));
         
 		// reschedule the displayer
 		display.reset();

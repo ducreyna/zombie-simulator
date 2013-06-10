@@ -137,8 +137,8 @@ public class Environment extends SimState
 			bonusPackCount = _val;
 	}
 	
-	/*
-	 * La localisation renvoyée est telle qu'il n'y a pas d'autre objet au même endroit.
+	/**
+	 * There is no other object at the returned location
 	 */
 	private Int2D getEmpty2DLocation()
 	{

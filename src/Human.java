@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import sim.engine.SimState;
 import sim.engine.Steppable;
@@ -211,7 +210,13 @@ public class Human extends Element implements Steppable
 						{
 							 if(humansGroup.size() >= 1)
 							 {
-								// TODO Construire un bunker
+								// TODO Construire un bunker								
+						        bunker = new Bunker();									
+								bunker.x = this.x;
+								bunker.y = this.y;									
+								environment.grid.setObjectLocation(bunker, this.x, this.y);
+						        Stoppable stoppable  = environment.schedule.scheduleRepeating(bunker);
+						        bunker.stoppable = stoppable;
 							 }
 						}
 						else if(!bunker.isInBunker(this) && !bunker.isFull())
