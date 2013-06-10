@@ -1,28 +1,23 @@
 import java.util.ArrayList;
 
 import sim.engine.SimState;
-import sim.engine.Steppable;
-import sim.engine.Stoppable;
 
 
-public class Bunker extends Element implements Steppable
+public class Bunker extends Element
 {
 	private int life = Constants.BUNKER_LIFE_MAX_LEVEL_1;
 	private int level = 1;
 	private ArrayList<Human> humans = new ArrayList<Human>();
-	
-	public Environment environment;
-	public Stoppable stoppable;
-	
+		
 	@Override
 	public void step(SimState state)
 	{
-		this.environment = (Environment) state;
+		this.environment = (Environment)state;
 		
 		if(life <= 0)
 		{
 			this.environment.grid.remove(this);
-			stoppable.stop();
+			this.stoppable.stop();
 		}
 	}
 	

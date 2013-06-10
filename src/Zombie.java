@@ -1,17 +1,12 @@
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import sim.engine.SimState;
-import sim.engine.Steppable;
-import sim.engine.Stoppable;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Bag;
 import sim.util.IntBag;
 
-public class Zombie extends Element implements Steppable
-{
-	public Stoppable stoppable;
-	
+public class Zombie extends Element
+{	
 	private int speed = Constants.ZOMBIE_SPEED_MAX;
 	private int perception = Constants.ZOMBIE_PERCEPTION_MAX;
 	private boolean isMaximumShot = false;
@@ -33,7 +28,7 @@ public class Zombie extends Element implements Steppable
 	
 	@Override
 	public void step(SimState state) {
-		Environment environment = (Environment)state;
+		this.environment = (Environment)state;
 
 		
 		if(!this.isAlive)
