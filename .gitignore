@@ -8,6 +8,10 @@
 # MacOS files
 .DS_STORE
 
+# GNU/Linux files
+.directory
+.*~
+
 # Eclipse files
 .classpath
 .project
