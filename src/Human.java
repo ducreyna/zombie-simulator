@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+
 import sim.engine.SimState;
 import sim.engine.Stoppable;
 import sim.field.grid.SparseGrid2D;
+import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.Bag;
 import sim.util.IntBag;
 
@@ -212,6 +215,7 @@ public class Human extends Element
 								buildBunker.setHumans(humansGroup);
 								environment.addElement(buildBunker, this.x, this.y);
 						        humansGroup.clear();
+						        this.hideImage();
 						        break;
 							 }
 							 else
@@ -223,6 +227,7 @@ public class Human extends Element
 						{
 							// We integrate the bunker
 							bunker.upgrade(this, environment);
+							this.hideImage();
 							move(environment, bunker.x, bunker.y);
 							bunkerFound = false;
 							bunker = null;
@@ -249,7 +254,7 @@ public class Human extends Element
 						}
 						else if(!humansGroup.isEmpty())
 						{
-//							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
+							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
 							humansGroup.clear();
 							break;
 						}
@@ -415,6 +420,7 @@ public class Human extends Element
 						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y + 1));
 						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.TOP);
 				}
 				else if(this.y > c) // Move down
 				{
@@ -423,6 +429,7 @@ public class Human extends Element
 						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y - 1));
 						y = env.grid.sty(y - 1);
 					}
+					this.setImage(Direction.BOTTOM);
 				}
 			}
 			else if(c == this.y) // If we are on the same row
@@ -434,6 +441,7 @@ public class Human extends Element
 						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y));
 						x = env.grid.stx(x + 1);
 					}
+					this.setImage(Direction.RIGHT);
 				}
 				else if(this.x > l) // Move left
 				{
@@ -442,6 +450,7 @@ public class Human extends Element
 						env.grid.setObjectLocation(this, env.grid.stx(x - 1), env.grid.sty(y));
 						x = env.grid.stx(x - 1);
 					}
+					this.setImage(Direction.LEFT);
 				}
 			}
 			else
@@ -454,6 +463,7 @@ public class Human extends Element
 						x = env.grid.stx(x + 1);
 						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.BOTTOM);
 				}
 				else if(this.x < l && this.y > c) // Move up left
 				{
@@ -463,6 +473,7 @@ public class Human extends Element
 						x = env.grid.stx(x + 1);
 						y = env.grid.sty(y - 1);
 					}
+					this.setImage(Direction.TOP);
 				}
 				else if(this.x > l && this.y < c) // Move down right
 				{
@@ -472,6 +483,7 @@ public class Human extends Element
 						x = env.grid.stx(x - 1);
 						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.BOTTOM);
 				}
 				else if(this.x > l && this.y > c) // Move up right
 				{
@@ -481,6 +493,7 @@ public class Human extends Element
 						x = env.grid.stx(x + 1);
 						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.TOP);
 				}
 			}
 		}	
@@ -521,17 +534,20 @@ public class Human extends Element
 				this.direction = Direction.TOP;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y - randomB));
 				y = model.grid.sty(y - randomB);
+				this.setImage(Direction.TOP);
 				break;
 			case BOTTOM:
 				this.direction = Direction.BOTTOM;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y + randomB));
 				y = model.grid.sty(y + randomB);
+				this.setImage(Direction.BOTTOM);
 				break;
 			case LEFT:
 				// LEFT
 				this.direction = Direction.LEFT;
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), y);
 				x = model.grid.stx(x - randomB);
+				this.setImage(Direction.LEFT);
 				break;
 			case TOPLEFT:
 				// TOPLEFT
@@ -539,6 +555,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y - randomB);
+				this.setImage(Direction.TOP);
 				break;
 			case TOPRIGHT:
 				// TOPRIGHT
@@ -546,6 +563,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y - randomB);
+				this.setImage(Direction.TOP);
 				break;
 			case BOTTOMLEFT:
 				// BOTTOMLEFT
@@ -553,6 +571,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y + randomB);
+				this.setImage(Direction.BOTTOM);
 				break;
 			case BOTTOMRIGHT:
 				// BOTTOMRIGHT
@@ -560,19 +579,60 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y + randomB);
+				this.setImage(Direction.BOTTOM);
 				break;
 			default:
 				// RIGHT
 				this.direction = Direction.RIGHT;
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), y);
 				x = model.grid.stx(x + randomB);
+				this.setImage(Direction.RIGHT);
 				break;
 			}
 		this.numberOfRandom++;
 	}
 	
-	public void attack(int damage)
+	/**
+	 * Public method to attack a human
+	 * @param damage
+	 */
+	public void attack(int damages)
 	{
-		this.life -= damage;
+		this.life -= damages;
+	}
+	
+	public void setImage(Direction direction)
+	{
+		ImageIcon imageIcon = null;
+		
+		switch(direction)
+		{
+		case BOTTOM:
+			imageIcon = new ImageIcon("ressources/human_bottom.png");
+			break;
+		case TOP:
+			imageIcon = new ImageIcon("ressources/human_up.png");
+			break;
+		case LEFT:
+			imageIcon = new ImageIcon("ressources/human_left.png");
+			break;
+		case RIGHT:
+			imageIcon = new ImageIcon("ressources/human_right.png");
+			break;
+		default:
+			break;
+		}
+		
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(imageIcon));
+		environment.environmentUI.display.repaint();
+	}
+	
+	/**
+	 * Hide human image
+	 */
+	public void hideImage()
+	{
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("")));
+		environment.environmentUI.display.repaint();
 	}
 }

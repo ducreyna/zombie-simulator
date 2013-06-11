@@ -47,8 +47,8 @@ public class Environment extends SimState
 		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
-		setHumanCount(10);
-		setZombieCount(5);
+		setHumanCount(5);
+		setZombieCount(2);
 		setBonusPackCount(3);
 
 		humans = new Human[humanCount];
