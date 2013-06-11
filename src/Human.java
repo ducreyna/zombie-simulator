@@ -1,19 +1,14 @@
 import java.util.ArrayList;
 
 import sim.engine.SimState;
-import sim.engine.Steppable;
 import sim.engine.Stoppable;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Bag;
 import sim.util.IntBag;
 
 
-public class Human extends Element implements Steppable
+public class Human extends Element
 {
-//	public int x, y;
-	public Stoppable stoppable;
-	private Environment environment;
-	
 	private int speed = Constants.HUMAN_SPEED_MAX;
 	private int perception = Constants.HUMAN_PERCEPTION_MAX;
 	private int life = Constants.HUMAN_LIFE_MAX;
@@ -221,11 +216,7 @@ public class Human extends Element implements Steppable
 //								 System.out.println(humansGroup);
 								Bunker buildBunker = new Bunker();
 								buildBunker.setHumans(humansGroup);
-								buildBunker.x = this.x;
-								buildBunker.y = this.y;									
-								environment.grid.setObjectLocation(buildBunker, this.x, this.y);
-						        Stoppable stoppable  = environment.schedule.scheduleRepeating(buildBunker);
-						        buildBunker.stoppable = stoppable;
+								environment.addElement(buildBunker, this.x, this.y);
 						        humansGroup.clear();
 						        break;
 							 }

@@ -56,7 +56,6 @@ public class EnvironmentUI extends GUIState
 		Environment env = (Environment) state;
 		env.setEnvironmentUI(this);
 		
-		// TODO : define the portrayals
         //ColorMap map = new SimpleColorMap(32000, 32000, Color.red, Color.red);
         //perceptionPortrayal.setField(env.perceptionGrid);
         //perceptionPortrayal.setMap(map);

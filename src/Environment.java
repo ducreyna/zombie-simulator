@@ -24,6 +24,12 @@ public class Environment extends SimState
 	Zombie[] zombies;
 	BonusPack[] bonusPacks;
 
+	public static void main(String[] args)
+	{
+		doLoop(Environment.class, args);
+		System.exit(0);
+	}
+	
 	public Environment(long seed)
 	{
 		super(seed);
@@ -56,48 +62,32 @@ public class Environment extends SimState
 
 	        Int2D location = getEmpty2DLocation();
 			
-			humans[i].x = location.x;
-			humans[i].y = location.y;
-			
-	        grid.setObjectLocation(humans[i], location.x, location.y);
-	        Stoppable stoppable  = schedule.scheduleRepeating(humans[i]);
-	        humans[i].stoppable = stoppable;
+	        addElement(humans[i], location.x, location.y);
         }
-		
-		// add randomly zombies 
+	}
+	
+	public void setEnvironmentUI(EnvironmentUI environmentUI)
+	{
+		this.environmentUI = environmentUI;
+
 //		for(int i = 0; i < zombieCount; i++)
 //        {
 //	        zombies[i] = new Zombie();
 //	        
 //	        Int2D location = getEmpty2DLocation();
 //			
-//			zombies[i].x = location.x;
-//			zombies[i].y = location.y;
-//			
-//	        grid.setObjectLocation(zombies[i], location.x, location.y);
-//	        Stoppable stoppable  = schedule.scheduleRepeating(zombies[i]);
-//	        zombies[i].stoppable = stoppable;
+//	        addElement(zombies[i], location.x, location.y);
 //        }
-		
-		// add randomly bonus packs
+//		
+//		// add randomly bonus packs
 //		for(int i = 0; i < bonusPackCount; i++)
 //        {
 //	        bonusPacks[i] = new BonusPack();
 //	        
 //	        Int2D location = getEmpty2DLocation();
-//			
-//			bonusPacks[i].x = location.x;
-//			bonusPacks[i].y = location.y;
-//			
-//	        grid.setObjectLocation(bonusPacks[i], location.x, location.y);
-//	        Stoppable stoppable  = schedule.scheduleRepeating(bonusPacks[i]);
-//	        bonusPacks[i].stoppable = stoppable;
+//	        
+//			addElement(bonusPacks[i], location.x, location.y);
 //        }
-	}
-	
-	public void setEnvironmentUI(EnvironmentUI environmentUI)
-	{
-		this.environmentUI = environmentUI;
 	}
 	
 	public int getGridHeight()
@@ -157,9 +147,12 @@ public class Environment extends SimState
 		return location;
 	}
 	
-	public static void main(String[] args)
-	{
-		doLoop(Environment.class, args);
-		System.exit(0);
-	}
+	public boolean addElement(Element _e, int _x, int _y)
+    {							
+		_e.x = _x;
+		_e.y = _y;									
+		Stoppable stoppable  = schedule.scheduleRepeating(_e);
+		_e.stoppable = stoppable;
+		return grid.setObjectLocation(_e, _x, _y);
+    }
 }

@@ -8,24 +8,21 @@ import sim.engine.Stoppable;
 import sim.portrayal.simple.ImagePortrayal2D;
 
 
-public class Bunker extends Element implements Steppable
+public class Bunker extends Element
 {
 	private int life = Constants.BUNKER_LIFE_MAX_LEVEL_2;
 	private int level = 1;
 	private ArrayList<Human> humans = new ArrayList<Human>();
-	
-	public Environment environment;
-	public Stoppable stoppable;
-	
+		
 	@Override
 	public void step(SimState state)
 	{
-		this.environment = (Environment) state;
+		this.environment = (Environment)state;
 		
 		if(life <= 0)
 		{
 			this.environment.grid.remove(this);
-			stoppable.stop();
+			this.stoppable.stop();
 		}
 	}
 	
