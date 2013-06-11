@@ -249,7 +249,7 @@ public class Human extends Element
 						}
 						else if(!humansGroup.isEmpty())
 						{
-//							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
+							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
 							humansGroup.clear();
 							break;
 						}

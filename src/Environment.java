@@ -48,7 +48,7 @@ public class Environment extends SimState
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
 		setHumanCount(10);
-		setZombieCount(5);
+		setZombieCount(20);
 		setBonusPackCount(3);
 
 		humans = new Human[humanCount];
