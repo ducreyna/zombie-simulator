@@ -8,16 +8,21 @@ import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
+import sim.portrayal.grid.HexaValueGridPortrayal2D;
 import sim.portrayal.simple.ImagePortrayal2D;
 import sim.portrayal.simple.OvalPortrayal2D;
+import sim.util.gui.ColorMap;
+import sim.util.gui.SimpleColorMap;
 
 public class EnvironmentUI extends GUIState
 {
 	public Display2D display;
 	public JFrame displayFrame;
+	Environment environment;
 
 	HexaSparseGridPortrayal2D environmentPortrayal = new HexaSparseGridPortrayal2D();
-    //HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception");
+    HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception"); // TODO
+
 	
 	public static void main(String[] args)
 	{
@@ -53,13 +58,14 @@ public class EnvironmentUI extends GUIState
 
 	public void setupPortrayals()
 	{
-		Environment env = (Environment) state;
+		environment = (Environment) state;
 		
-        //ColorMap map = new SimpleColorMap(32000, 32000, Color.red, Color.red);
-        //perceptionPortrayal.setField(env.perceptionGrid);
-        //perceptionPortrayal.setMap(map);
+		// TODO
+        ColorMap map = new SimpleColorMap(0, 10, Color.green, Color.red);
+        perceptionPortrayal.setField(environment.perceptionGrid);
+        perceptionPortrayal.setMap(map);
         
-        environmentPortrayal.setField(env.grid);
+        environmentPortrayal.setField(environment.grid);
         ImageIcon humanIcon = new ImageIcon("ressources/human_bottom.png");
         ImageIcon zombieIcon = new ImageIcon("ressources/zombie_bottom.png");
         ImageIcon bunkerIcon = new ImageIcon("ressources/bunker_2.png");
@@ -108,9 +114,8 @@ public class EnvironmentUI extends GUIState
 		displayFrame = display.createFrame();
 		c.registerFrame(displayFrame);
 		displayFrame.setVisible(true);
-
-		// TODO : attach the portrayals
-		//display.attach(perceptionPortrayal, "Human Perception");
+		
+		display.attach(perceptionPortrayal, "Human Perception"); // TODO
 		display.attach(environmentPortrayal, "Environment");
 
 		// specify the backdrop color -- what gets painted behind the displays

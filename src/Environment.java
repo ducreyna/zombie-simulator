@@ -1,18 +1,20 @@
 import sim.engine.SimState;
 import sim.engine.Stoppable;
-import sim.field.grid.DoubleGrid2D;
+import sim.field.grid.Grid2D;
+import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Bag;
 import sim.util.Int2D;
+import sim.util.IntBag;
 
 public class Environment extends SimState
 {
 	private static final long serialVersionUID = 1;
 
-	public int gridHeight = 60;
-	public int gridWidth = 60;
+	public int gridHeight = 15;
+	public int gridWidth = 15;
 
-    public DoubleGrid2D perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight, 0);
+    public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // initial value : 0 // TODO
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
 	
 	private int humanCount;
@@ -43,17 +45,41 @@ public class Environment extends SimState
 		super.start();
 
 		// it's faster to make a new sparse field than to clear it
-		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
+		perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // TODO
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
-		setHumanCount(20);
-		setZombieCount(25);
-		setBonusPackCount(5);
+		setHumanCount(5);
+		setZombieCount(3);
+		setBonusPackCount(2);
 
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];
 		bonusPacks = new BonusPack[bonusPackCount];
-		        
+		
+		// TODO
+		/*
+        humans[0] = new Human();			
+        addElement(humans[0], 8, 8);
+        IntBag xPosBag = new IntBag();
+        IntBag yPosBag = new IntBag();
+        grid.getHexagonalLocations(humans[0].x, humans[0].y, 1, SparseGrid2D.BOUNDED, true, xPosBag, yPosBag);
+        
+        for (int i = 0; i < xPosBag.size(); i++) {
+        	System.out.println("("+xPosBag.get(i)+","+yPosBag.get(i)+")");
+        }
+
+    	int[] _put;
+    	int x, y;
+    	// for each x and y position
+        for (int i = 0; i < xPosBag.size(); i++)
+        {
+			x = xPosBag.get(i);
+			y = yPosBag.get(i);
+			perceptionGrid.field[x][y] = 3;
+			System.out.println("("+x+","+y+")");
+        }
+        */
+		
 		// add randomly humans 
 		for(int i = 0; i < humanCount; i++)
         {
@@ -83,6 +109,8 @@ public class Environment extends SimState
 	        
 			addElement(bonusPacks[i], location.x, location.y);
         }
+
+		// TODO : schedule.scheduleRepeating(...);
 	}
 	
 	public int getGridHeight()
