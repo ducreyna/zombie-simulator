@@ -184,6 +184,7 @@ public class Human extends Element
 							// Default behaviour
 							if(neighboursArray.get(i).get(j) instanceof Zombie)
 							{
+								zombieFound = true;
 								shoot((Zombie)neighboursArray.get(i).get(j));
 								break;
 							}
@@ -201,10 +202,10 @@ public class Human extends Element
 						}
 					}
 					
-					if(i == 0)
+					if(i == 0  && !zombieFound)
 					{
 						// Elements on the same case
-						if(!bunkerFound && !zombieFound)
+						if(!bunkerFound)
 						{
 //							System.out.println(humansGroup.size());
 							humansGroup.remove(this);
@@ -236,7 +237,7 @@ public class Human extends Element
 							break;
 						}
 					}
-					else
+					else if(!zombieFound)
 					{
 						if(bunkerFound)
 						{
@@ -280,7 +281,7 @@ public class Human extends Element
 						}
 					}
 					
-					if(!doRandomMove)
+					if(!doRandomMove || zombieFound)
 						break;
 				}
 				if(doRandomMove)
