@@ -147,8 +147,14 @@ public class Environment extends SimState
 		return location;
 	}
 	
+	public boolean addBonusPack()
+	{
+		Int2D location = getEmpty2DLocation();
+		return addElement(new BonusPack(), location.x, location.y);
+	}
+	
 	public boolean addElement(Element _e, int _x, int _y)
-    {							
+    {		
 		_e.x = _x;
 		_e.y = _y;									
 		Stoppable stoppable  = schedule.scheduleRepeating(_e);

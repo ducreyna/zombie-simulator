@@ -42,11 +42,17 @@ public class Human extends Element
 	private IntBag neighboursX;
 	private IntBag neighboursY;
 	private ArrayList<Bag> neighboursArray;
+	private boolean isBitten = false;
 	
 	@Override
 	public void step(SimState state) 
 	{
 		this.environment = (Environment)state;
+		
+		if(isBitten)
+		{
+			life -= 1;
+		}
 		
 		if(this.life != 0)
 		{
@@ -122,10 +128,12 @@ public class Human extends Element
 								{
 									this.life += bonusPack.getLife();
 								}
+								isBitten = false;
 								
 								// Removing bonus pack
 								environment.grid.remove(bonusPack);
 								bonusPack.stoppable.stop();
+								environment.addBonusPack();
 							}
 							break;
 						}
@@ -599,6 +607,7 @@ public class Human extends Element
 	public void attack(int damages)
 	{
 		this.life -= damages;
+		this.isBitten = true;
 	}
 	
 	public void setImage(Direction direction)
