@@ -11,7 +11,7 @@ public class Constants
 	public static int HUMAN_MUNITIONS_MAX_LEVEL_3 = 20;
 	public static int HUMAN_MUNITIONS_MAX_LEVEL_4 = 15;
 	public static int HUMAN_MUNITIONS_MAX_LEVEL_5 = 10;
-	public static int HUMAN_XP_MAX = 10;
+	public static int HUMAN_XP_MAX = 5;
 
 	public static int ZOMBIE_SPEED_MAX = 4;
 	public static int ZOMBIE_PERCEPTION_MAX = 6;

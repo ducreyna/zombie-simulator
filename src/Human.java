@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
 import sim.engine.SimState;
-import sim.engine.Stoppable;
 import sim.field.grid.SparseGrid2D;
 import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.Bag;
@@ -15,12 +14,10 @@ public class Human extends Element
 	private int speed = Constants.HUMAN_SPEED_MAX;
 	private int perception = Constants.HUMAN_PERCEPTION_MAX;
 	private int life = Constants.HUMAN_LIFE_MAX;
-	private int weaponLevel = 1;
-	private int munitions = 10;
+	private int weaponLevel = 1;//(int)(Math.random() * (Constants.HUMAN_WEAPON_LEVEL_MAX - 1)) + 1;
+	private int munitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
 	private int maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
 	private int XP = 0;
-	
-	public boolean inBunker = false;
 	
 	private enum Direction
 	{
@@ -34,6 +31,7 @@ public class Human extends Element
 		BOTTOMRIGHT;
 	}
 	
+	private boolean firstTime = true;
 	private Direction direction = Direction.RIGHT;
 	private int numberOfRandom = 0;
 	private Bag neighbours = new Bag();
@@ -44,17 +42,33 @@ public class Human extends Element
 	private ArrayList<Bag> neighboursArray;
 	private boolean isBitten = false;
 	
+	public boolean goAway = false;
+	private int cptStepGoAway = 0;
+	
 	@Override
 	public void step(SimState state) 
 	{
 		this.environment = (Environment)state;
+		
+		if(firstTime)
+		{
+			weaponLevel = (int)(Math.random() * (Constants.HUMAN_WEAPON_LEVEL_MAX - 1)) + 1;
+			upgradeWeapon();
+			firstTime = false;
+		}
 		
 		if(isBitten)
 		{
 			life -= 1;
 		}
 		
-		if(this.life != 0)
+		if(cptStepGoAway >= 3)
+		{
+			goAway = false;
+			cptStepGoAway = 0;
+		}
+		
+		if(this.life >= 0)
 		{
 			// Weapon Upgrade
 			if(XP >= Constants.HUMAN_XP_MAX)
@@ -77,80 +91,90 @@ public class Human extends Element
 				BonusPack bonusPack = null;
 				boolean bonusPackFound = false;
 				boolean zombieFound = false;
+				int i, j;
 				
-				for(int i = 0; i < neighboursArray.size(); i++)
+				for(i = 0; i < neighboursArray.size(); i++)
 				{
-					for(int j = 0; j < neighboursArray.get(i).size(); j++)
+					for(j = 0; j < neighboursArray.get(i).size(); j++)
 					{
 						if(neighboursArray.get(i).get(j) instanceof Zombie)
 						{
-							if((i == 0 || i == 1) && this.munitions > 0)
+							if(this.munitions > 0 && life >= 3)
 							{
-								// Zombie very close
-								zombieFound = true;
-								shoot((Zombie) neighboursArray.get(i).get(j));
-								break;
+								if(i == 0 || i == 1)
+								{
+									// Zombie very close
+									zombieFound = true;
+									shoot((Zombie) neighboursArray.get(i).get(j));
+									break;
+								}
 							}
 						}
 						else if(neighboursArray.get(i).get(j) instanceof BonusPack)
 						{
 							bonusPackFound = true;
 							bonusPack = (BonusPack) neighboursArray.get(i).get(j);
-							if(i == 0 || i == 1)
-							{
-								// We are enough close to pick up the bonus pack
-								// Weapon
-								if((bonusPack.getWeaponUpgrade() + this.weaponLevel) > Constants.HUMAN_WEAPON_LEVEL_MAX)
-								{
-									this.weaponLevel = Constants.HUMAN_WEAPON_LEVEL_MAX;
-								}
-								else
-								{
-									this.weaponLevel += bonusPack.getWeaponUpgrade();
-								}
-								upgradeWeapon();
-								// Munitions
-								if((bonusPack.getMunitions() > this.maxMunitions)
-										|| ((bonusPack.getMunitions() + this.munitions) > this.maxMunitions))
-								{
-									this.munitions = maxMunitions;
-								}
-								else
-								{
-									this.munitions += bonusPack.getMunitions();
-								}
-								// Life
-								if((bonusPack.getLife() + this.life) > Constants.HUMAN_LIFE_MAX)
-								{
-									this.life = Constants.HUMAN_LIFE_MAX;
-								}
-								else
-								{
-									this.life += bonusPack.getLife();
-								}
-								isBitten = false;
-								
-								// Removing bonus pack
-								environment.grid.remove(bonusPack);
-								bonusPack.stoppable.stop();
-								environment.addBonusPack();
-							}
 							break;
 						}
 					}
-					if(bonusPackFound || zombieFound)
+					
+					if(bonusPackFound)
+					{
+						if(i == 0 || i == 1)
+						{
+							// We are enough close to pick up the bonus pack
+							// Weapon
+							if((bonusPack.getWeaponUpgrade() + this.weaponLevel) > Constants.HUMAN_WEAPON_LEVEL_MAX)
+							{
+								this.weaponLevel = Constants.HUMAN_WEAPON_LEVEL_MAX;
+							}
+							else
+							{
+								this.weaponLevel += bonusPack.getWeaponUpgrade();
+							}
+							upgradeWeapon();
+							// Munitions
+							if((bonusPack.getMunitions() > this.maxMunitions)
+									|| ((bonusPack.getMunitions() + this.munitions) > this.maxMunitions))
+							{
+								this.munitions = maxMunitions;
+							}
+							else
+							{
+								this.munitions += bonusPack.getMunitions();
+							}
+							// Life
+							if((bonusPack.getLife() + this.life) > Constants.HUMAN_LIFE_MAX)
+							{
+								this.life = Constants.HUMAN_LIFE_MAX;
+							}
+							else
+							{
+								this.life += bonusPack.getLife();
+							}
+							isBitten = false;
+							
+							// Removing bonus pack
+							environment.grid.remove(bonusPack);
+							bonusPack.stoppable.stop();
+							// Add a new Bonus pack on the map
+							environment.addBonusPack();
+						}
+						else
+						{
+							// We move to the bonus pack
+							move(environment, bonusPack.x, bonusPack.y);
+						}
+						bonusPackFound = false;
+						bonusPack = null;
 						break;
-				}
-				
-				if(bonusPack != null)
-				{
-					// We move to the bonus pack
-					move(environment, bonusPack.x, bonusPack.y);
-				}
-				else
-				{
-					// We continue the research
-					randomMove(environment);
+					}
+					else
+					{
+						// We continue the research
+						randomMove(environment);
+						break;
+					}
 				}
 			}
 			else
@@ -215,7 +239,7 @@ public class Human extends Element
 						if(!bunkerFound)
 						{
 							humansGroup.remove(this);
-							 if(humansGroup.size() >= 1)
+							 if(humansGroup.size() >= 1 && !goAway)
 							 {
 								move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
 								humansGroup.add(this);
@@ -223,11 +247,12 @@ public class Human extends Element
 								buildBunker.setHumans(humansGroup);
 								environment.addElement(buildBunker, this.x, this.y);
 						        humansGroup.clear();
-						        this.hideImage();
+						        this.hide();
 						        break;
 							 }
 							 else
 							 {
+								 cptStepGoAway ++;
 								 doRandomMove = true;
 							 }
 						}
@@ -235,7 +260,7 @@ public class Human extends Element
 						{
 							// We integrate the bunker
 							bunker.upgrade(this, environment);
-							this.hideImage();
+							this.hide();
 							move(environment, bunker.x, bunker.y);
 							bunkerFound = false;
 							bunker = null;
@@ -281,7 +306,7 @@ public class Human extends Element
 		}
 		else
 		{
-			// TODO Supprimer humain + ajouter zombie
+			environment.addZombie(x, y);
 			environment.grid.remove(this);
 			this.stoppable.stop();
 		}
@@ -297,7 +322,7 @@ public class Human extends Element
 		ArrayList<Bag> result = new ArrayList<Bag>();
 //		this.perception = (int)(Math.random() * Constants.HUMAN_PERCEPTION_MAX) + 1;
 		
-		for(int i = 0; i <= this.perception; i++)
+		for(int i = 0; i <= (this.perception + 1); i++)
 		{
 			result.add(i, new Bag());
 		}
@@ -358,17 +383,17 @@ public class Human extends Element
 			case 1:
 				// Touch a leg
 				zombie.bodyShot(Zombie.BODY_PART.LEG);
-				XP ++;
+				XP +=2;
 				break;
 			case 2:
 				// Touch an arm
 				zombie.bodyShot(Zombie.BODY_PART.ARM);
-				XP ++;
+				XP +=2;
 				break;
 			case 3:
 				// Touch a trunk
 				zombie.bodyShot(Zombie.BODY_PART.TRUNK);
-				XP += 2;
+				XP += 3;
 				break;
 			case 4:
 				// Headshot
@@ -401,6 +426,7 @@ public class Human extends Element
 		{
 			maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_5;
 		}
+		munitions = maxMunitions;
 	}
 	
 	private void move(Environment env, int l, int c)
@@ -408,7 +434,7 @@ public class Human extends Element
 		this.numberOfRandom = 0;
 		double distance = Math.sqrt(Math.pow(l - this.x, 2) + Math.pow(c - this.y, 2));
 		
-//		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
+		this.speed = (int)(Math.random() * (Constants.HUMAN_SPEED_MAX -1)) + 1;
 //		System.out.println((int)distance);
 		if((int)distance > 0 && (int)distance <= this.speed)
 		{
@@ -639,9 +665,58 @@ public class Human extends Element
 	/**
 	 * Hide human image
 	 */
-	public void hideImage()
+	public void hide()
 	{
 		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("")));
 		environment.environmentUI.display.repaint();
+	}
+	
+	/**
+	 * Show human image
+	 */
+	public void show()
+	{
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/human_bottom.png")));
+		environment.environmentUI.display.repaint();
+	}
+
+	public int getSpeed()
+	{
+		return speed;
+	}
+
+	public int getPerception()
+	{
+		return perception;
+	}
+
+	public int getLife()
+	{
+		return life;
+	}
+
+	public int getWeaponLevel()
+	{
+		return weaponLevel;
+	}
+
+	public int getMunitions()
+	{
+		return munitions;
+	}
+
+	public int getMaxMunitions()
+	{
+		return maxMunitions;
+	}
+
+	public int getXP()
+	{
+		return XP;
+	}
+
+	public boolean isBitten()
+	{
+		return isBitten;
 	}
 }

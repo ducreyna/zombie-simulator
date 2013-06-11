@@ -2,9 +2,8 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
+import sim.app.virus.Evil;
 import sim.engine.SimState;
-import sim.engine.Steppable;
-import sim.engine.Stoppable;
 import sim.portrayal.simple.ImagePortrayal2D;
 
 
@@ -21,9 +20,63 @@ public class Bunker extends Element
 		
 		if(life <= 0)
 		{
+			for(int i = 0; i < humans.size(); i++)
+			{
+				humans.get(i).show();
+				humans.get(i).goAway = true;
+			}
+			
 			this.environment.grid.remove(this);
 			this.stoppable.stop();
 		}
+		else
+		{
+			for(int i = 0; i < humans.size(); i++)
+			{
+				if(humans.get(i).x != this.x || humans.get(i).y != this.y)
+				{
+					humans.remove(i);
+					if(humans.size() > 0)
+					{
+						downgrade(environment);
+					}
+					else
+					{
+						this.environment.grid.remove(this);
+						this.stoppable.stop();
+					}
+				}
+			}
+		}
+	}
+	
+	private void downgrade(Environment env)
+	{
+		ImageIcon bunkerIcon = null;
+		this.level = humans.size();
+		
+		switch(level)
+		{
+		case 1:
+			bunkerIcon = new ImageIcon("ressources/bunker_2.png");
+			break;
+		case 2:
+			bunkerIcon = new ImageIcon("ressources/bunker_2.png");
+			break;
+		case 3:
+			bunkerIcon = new ImageIcon("ressources/bunker_3.png");
+			break;
+		case 4:
+			bunkerIcon = new ImageIcon("ressources/bunker_4.png");
+			break;
+		case 5:
+			bunkerIcon = new ImageIcon("ressources/bunker_5.png");
+			break;
+		default:
+			break;
+		}
+		env.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(bunkerIcon));
+		env.environmentUI.display.repaint();
 	}
 	
 	/**
@@ -66,9 +119,7 @@ public class Bunker extends Element
 		}
 		
 		env.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(bunkerIcon));
-//		env.environmentUI.display.reset();
 		env.environmentUI.display.repaint();
-		//		env.environmentUI.display.attach(env.environmentUI.environmentPortrayal, "Environment");
 	}
 	
 	public void setHumans(ArrayList<Human> humans)
@@ -98,5 +149,15 @@ public class Bunker extends Element
 	public int getLevel()
 	{
 		return level;
+	}
+
+	public int getLife()
+	{
+		return life;
+	}
+	
+	public int getNbHumans()
+	{
+		return this.humans.size();
 	}
 }

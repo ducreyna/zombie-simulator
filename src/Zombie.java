@@ -385,4 +385,19 @@ public class Zombie extends Element
 		
 		return null;
 	}
+
+	public int getNumberOfRandom()
+	{
+		return numberOfRandom;
+	}
+
+	public void setNumberOfRandom(int numberOfRandom)
+	{
+		this.numberOfRandom = numberOfRandom;
+	}
+
+	public boolean isBlockedForOneStep()
+	{
+		return isBlockedForOneStep;
+	}
 }
