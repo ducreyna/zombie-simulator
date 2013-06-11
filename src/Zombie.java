@@ -1,7 +1,10 @@
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
+import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.Bag;
 import sim.util.IntBag;
 
@@ -36,13 +39,68 @@ public class Zombie extends Element
 			environment.grid.remove(this);
 			this.stoppable.stop();
 		}
-		else
+		else if(!this.isBlockedForOneStep)
 		{
 			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
-			//@SuppressWarnings("rawtypes")
-			//Iterator iterator = neighbours.iterator();
-			//neighboursArray = this.perception();
 			
+			
+			this.neighboursArray = this.perception();
+			
+			if(this.neighboursArray.get(0).size() != 0)
+			{
+				// Bouffer humain ou détruit bunker
+				Bag bag = (Bag)this.neighboursArray.get(0);
+				Bunker possibleBunker = this.getBunkerFromBag(bag);
+				if(possibleBunker != null)
+				{
+					int damage = 2;
+					possibleBunker.attack(damage);
+				}
+				else
+				{
+					int damage = 2;
+					((Human)bag.get(0)).attack(damage);
+				}
+			} 
+			else if(this.neighboursArray.get(1).size() != 0)
+			{
+				// Bouffer human ou détruit bunker
+				Bag bag = (Bag)this.neighboursArray.get(1);
+				Bunker possibleBunker = this.getBunkerFromBag(bag);
+				if(possibleBunker != null)
+				{
+					int damage = 2;
+					possibleBunker.attack(damage);
+				}
+				else
+				{
+					int damage = 2;
+					((Human)bag.get(0)).attack(damage);
+				}
+			}
+			else
+			{
+				Boolean loopFinished = true;
+				for(Bag bag : this.neighboursArray)
+				{
+					if(bag.size() != 0)
+					{
+						Element elt = (Element)bag.get(0);
+						this.move(this.environment, elt.x, elt.y);
+						loopFinished = false;
+						break;
+					}
+				}
+				
+				if(!loopFinished)
+				{
+					this.randomMove(this.environment);
+				}
+			}	
+		}
+		else
+		{
+			this.isBlockedForOneStep = false;
 		}
 	}
 
@@ -60,13 +118,19 @@ public class Zombie extends Element
 			result.add(k, new Bag());
 		}
 		
-		for(int i=0; i < posX.size(); i++)
+		for(int i=1; i < neighbours.size(); i++)
 		{
 			Object object = neighbours.get(i);
 			if((object instanceof Human) || (object instanceof Bunker))
 			{
-				int index = Math.max(this.x - Math.abs(this.x-Math.abs(posX.get(i))), this.y - Math.abs(this.y -Math.abs(posY.get(i))));
-				result.get(index).add(object);
+				int xB = ((Element)neighbours.get(i)).x;
+				int yB = ((Element)neighbours.get(i)).y;
+				double distance = Math.sqrt(Math.pow(xB - this.x, 2) + Math.pow(yB - this.y, 2));
+				if(distance > (this.perception + 1))
+				{ 
+					distance = Math.abs(this.environment.gridWidth - distance);
+				}
+				result.get((int)distance).add(object);
 			}
 		}
 		
@@ -108,6 +172,9 @@ public class Zombie extends Element
 		this.numberOfRandom = 0;
 		int distance = Math.max(Math.abs(this.x - l), Math.abs(this.y - c));
 		
+//		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
+//		System.out.println((int)distance);
+		
 		if(distance <= this.speed)
 		{
 			// We move directly to the case (l,c)
@@ -125,6 +192,8 @@ public class Zombie extends Element
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y + 1));
 						y = model.grid.sty(y + 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("zombie_up.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.y > c) // Move down
@@ -133,6 +202,8 @@ public class Zombie extends Element
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y - 1));
 						y = model.grid.sty(y - 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 			}
@@ -144,6 +215,8 @@ public class Zombie extends Element
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y));
 						x = model.grid.stx(x + 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_right.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x > l) // Move left
@@ -152,6 +225,8 @@ public class Zombie extends Element
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y));
 						x = model.grid.stx(x - 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_left.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 			}
@@ -164,6 +239,8 @@ public class Zombie extends Element
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
 						x = model.grid.stx(x + 1);
 						y = model.grid.sty(y + 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x < l && this.y > c) // Move up left
@@ -173,6 +250,8 @@ public class Zombie extends Element
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y - 1));
 						x = model.grid.stx(x + 1);
 						y = model.grid.sty(y - 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x > l && this.y < c) // Move down right
@@ -182,6 +261,8 @@ public class Zombie extends Element
 						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y + 1));
 						x = model.grid.stx(x - 1);
 						y = model.grid.sty(y + 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x > l && this.y > c) // Move up right
@@ -191,6 +272,8 @@ public class Zombie extends Element
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
 						x = model.grid.stx(x + 1);
 						y = model.grid.sty(y + 1);
+						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
+						this.environment.environmentUI.display.repaint();
 					}
 				}
 			}
@@ -229,17 +312,23 @@ public class Zombie extends Element
 				this.direction = Constants.Direction.TOP;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y - randomB));
 				y = model.grid.sty(y - randomB);
+				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
+				this.environment.environmentUI.display.repaint();
 				break;
 			case BOTTOM:
 				this.direction = Constants.Direction.BOTTOM;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y + randomB));
 				y = model.grid.sty(y + randomB);
+				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
+				this.environment.environmentUI.display.repaint();
 				break;
 			case LEFT:
 				// LEFT
 				this.direction = Constants.Direction.LEFT;
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), y);
 				x = model.grid.stx(x - randomB);
+				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_left.png")));
+				this.environment.environmentUI.display.repaint();
 				break;
 			case TOPLEFT:
 				// TOPLEFT
@@ -247,6 +336,8 @@ public class Zombie extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y - randomB);
+				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
+				this.environment.environmentUI.display.repaint();
 				break;
 			case TOPRIGHT:
 				// TOPRIGHT
@@ -254,6 +345,8 @@ public class Zombie extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y - randomB);
+				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
+				this.environment.environmentUI.display.repaint();
 				break;
 			case BOTTOMLEFT:
 				// BOTTOMLEFT
@@ -261,6 +354,8 @@ public class Zombie extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y + randomB);
+				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
+				this.environment.environmentUI.display.repaint();
 				break;
 			case BOTTOMRIGHT:
 				// BOTTOMRIGHT
@@ -268,6 +363,8 @@ public class Zombie extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y + randomB);
+				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
+				this.environment.environmentUI.display.repaint();
 				break;
 			default:
 				// RIGHT
@@ -277,5 +374,30 @@ public class Zombie extends Element
 				break;
 			}
 		this.numberOfRandom++;
+	}
+	
+	private Bunker getBunkerFromBag(Bag bag)
+	{
+		for(Object elt : bag)
+		{
+			if(elt instanceof Bunker) return (Bunker)elt;
+		}
+		
+		return null;
+	}
+
+	public int getNumberOfRandom()
+	{
+		return numberOfRandom;
+	}
+
+	public void setNumberOfRandom(int numberOfRandom)
+	{
+		this.numberOfRandom = numberOfRandom;
+	}
+
+	public boolean isBlockedForOneStep()
+	{
+		return isBlockedForOneStep;
 	}
 }

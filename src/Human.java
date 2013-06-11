@@ -1,7 +1,10 @@
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
+import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.Bag;
 import sim.util.IntBag;
 
@@ -11,8 +14,8 @@ public class Human extends Element
 	private int speed = Constants.HUMAN_SPEED_MAX;
 	private int perception = Constants.HUMAN_PERCEPTION_MAX;
 	private int life = Constants.HUMAN_LIFE_MAX;
-	private int weaponLevel = 1;
-	private int munitions = 10;
+	private int weaponLevel = 1;//(int)(Math.random() * (Constants.HUMAN_WEAPON_LEVEL_MAX - 1)) + 1;
+	private int munitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
 	private int maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
 	private int XP = 0;
 	
@@ -28,6 +31,7 @@ public class Human extends Element
 		BOTTOMRIGHT;
 	}
 	
+	private boolean firstTime = true;
 	private Direction direction = Direction.RIGHT;
 	private int numberOfRandom = 0;
 	private Bag neighbours = new Bag();
@@ -36,13 +40,35 @@ public class Human extends Element
 	private IntBag neighboursX;
 	private IntBag neighboursY;
 	private ArrayList<Bag> neighboursArray;
+	private boolean isBitten = false;
+	
+	public boolean goAway = false;
+	private int cptStepGoAway = 0;
 	
 	@Override
 	public void step(SimState state) 
 	{
 		this.environment = (Environment)state;
 		
-		if(this.life != 0)
+		if(firstTime)
+		{
+			weaponLevel = (int)(Math.random() * (Constants.HUMAN_WEAPON_LEVEL_MAX - 1)) + 1;
+			upgradeWeapon();
+			firstTime = false;
+		}
+		
+		if(isBitten)
+		{
+			life -= 1;
+		}
+		
+		if(cptStepGoAway >= 3)
+		{
+			goAway = false;
+			cptStepGoAway = 0;
+		}
+		
+		if(this.life >= 0)
 		{
 			// Weapon Upgrade
 			if(XP >= Constants.HUMAN_XP_MAX)
@@ -65,78 +91,90 @@ public class Human extends Element
 				BonusPack bonusPack = null;
 				boolean bonusPackFound = false;
 				boolean zombieFound = false;
+				int i, j;
 				
-				for(int i = 0; i < neighboursArray.size(); i++)
+				for(i = 0; i < neighboursArray.size(); i++)
 				{
-					for(int j = 0; j < neighboursArray.get(i).size(); j++)
+					for(j = 0; j < neighboursArray.get(i).size(); j++)
 					{
 						if(neighboursArray.get(i).get(j) instanceof Zombie)
 						{
-							if((i == 0 || i == 1) && this.munitions > 0)
+							if(this.munitions > 0 && life >= 3)
 							{
-								// Zombie very close
-								zombieFound = true;
-								shoot((Zombie) neighboursArray.get(i).get(j));
-								break;
+								if(i == 0 || i == 1)
+								{
+									// Zombie very close
+									zombieFound = true;
+									shoot((Zombie) neighboursArray.get(i).get(j));
+									break;
+								}
 							}
 						}
 						else if(neighboursArray.get(i).get(j) instanceof BonusPack)
 						{
 							bonusPackFound = true;
 							bonusPack = (BonusPack) neighboursArray.get(i).get(j);
-							if(i == 0 || i == 1)
-							{
-								// We are enough close to pick up the bonus pack
-								// Weapon
-								if((bonusPack.getWeaponUpgrade() + this.weaponLevel) > Constants.HUMAN_WEAPON_LEVEL_MAX)
-								{
-									this.weaponLevel = Constants.HUMAN_WEAPON_LEVEL_MAX;
-								}
-								else
-								{
-									this.weaponLevel += bonusPack.getWeaponUpgrade();
-								}
-								upgradeWeapon();
-								// Munitions
-								if((bonusPack.getMunitions() > this.maxMunitions)
-										|| ((bonusPack.getMunitions() + this.munitions) > this.maxMunitions))
-								{
-									this.munitions = maxMunitions;
-								}
-								else
-								{
-									this.munitions += bonusPack.getMunitions();
-								}
-								// Life
-								if((bonusPack.getLife() + this.life) > Constants.HUMAN_LIFE_MAX)
-								{
-									this.life = Constants.HUMAN_LIFE_MAX;
-								}
-								else
-								{
-									this.life += bonusPack.getLife();
-								}
-								
-								// Removing bonus pack
-								environment.grid.remove(bonusPack);
-								bonusPack.stoppable.stop();
-							}
 							break;
 						}
 					}
-					if(bonusPackFound || zombieFound)
+					
+					if(bonusPackFound)
+					{
+						if(i == 0 || i == 1)
+						{
+							// We are enough close to pick up the bonus pack
+							// Weapon
+							if((bonusPack.getWeaponUpgrade() + this.weaponLevel) > Constants.HUMAN_WEAPON_LEVEL_MAX)
+							{
+								this.weaponLevel = Constants.HUMAN_WEAPON_LEVEL_MAX;
+							}
+							else
+							{
+								this.weaponLevel += bonusPack.getWeaponUpgrade();
+							}
+							upgradeWeapon();
+							// Munitions
+							if((bonusPack.getMunitions() > this.maxMunitions)
+									|| ((bonusPack.getMunitions() + this.munitions) > this.maxMunitions))
+							{
+								this.munitions = maxMunitions;
+							}
+							else
+							{
+								this.munitions += bonusPack.getMunitions();
+							}
+							// Life
+							if((bonusPack.getLife() + this.life) > Constants.HUMAN_LIFE_MAX)
+							{
+								this.life = Constants.HUMAN_LIFE_MAX;
+							}
+							else
+							{
+								this.life += bonusPack.getLife();
+							}
+							isBitten = false;
+							
+							// Removing bonus pack
+							environment.grid.remove(bonusPack);
+							bonusPack.stoppable.stop();
+							// Add a new Bonus pack on the map
+							environment.addBonusPack();
+						}
+						else
+						{
+							// We move to the bonus pack
+							move(environment, bonusPack.x, bonusPack.y);
+						}
+						bonusPackFound = false;
+						bonusPack = null;
 						break;
-				}
-				
-				if(bonusPack != null)
-				{
-					// We move to the bonus pack
-					move(environment, bonusPack.x, bonusPack.y);
-				}
-				else
-				{
-					// We continue the research
-					randomMove(environment);
+					}
+					else
+					{
+						// We continue the research
+						randomMove(environment);
+						break;
+					}
 				}
 			}
 			else
@@ -147,13 +185,12 @@ public class Human extends Element
 				ArrayList<Human> humansGroup = new ArrayList<Human>();
 				Bunker bunker = null;
 				
+				int i,j;
 				// We have enough munitions and life
-				for(int i = 0; i < neighboursArray.size(); i++)
+				for(i = 0; i < neighboursArray.size(); i++)
 				{
-//					System.out.println(neighboursArray.get(i).size());
-					for(int j = 0; j < neighboursArray.get(i).size(); j++)
+					for(j = 0; j < neighboursArray.get(i).size(); j++)
 					{
-//						System.out.println(neighboursArray.get(i).get(j));
 						doRandomMove = false;
 						
 						if(i == 0)
@@ -180,6 +217,7 @@ public class Human extends Element
 							// Default behaviour
 							if(neighboursArray.get(i).get(j) instanceof Zombie)
 							{
+								zombieFound = true;
 								shoot((Zombie)neighboursArray.get(i).get(j));
 								break;
 							}
@@ -191,56 +229,75 @@ public class Human extends Element
 							else if(neighboursArray.get(i).get(j) instanceof Human)
 							{
 								humansGroup.add((Human) neighboursArray.get(i).get(j));
-//								move(environment, ((Human)neighboursArray.get(i).get(j)).x, ((Human)neighboursArray.get(i).get(j)).y);
-//								break;
 							}
 						}
 					}
 					
-					if(i == 0)
+					if(i == 0  && !zombieFound)
 					{
 						// Elements on the same case
-						if(!bunkerFound && !zombieFound)
+						if(!bunkerFound)
 						{
-							 if(humansGroup.size() >= 1)
+							humansGroup.remove(this);
+							 if(humansGroup.size() >= 1 && !goAway)
 							 {
-								bunker = new Bunker();
-								environment.addElement(bunker, this.x, this.y);
+								move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
+								humansGroup.add(this);
+								Bunker buildBunker = new Bunker();
+								buildBunker.setHumans(humansGroup);
+								environment.addElement(buildBunker, this.x, this.y);
+						        humansGroup.clear();
+						        this.hide();
+						        break;
+							 }
+							 else
+							 {
+								 cptStepGoAway ++;
+								 doRandomMove = true;
 							 }
 						}
 						else if(!bunker.isInBunker(this) && !bunker.isFull())
 						{
 							// We integrate the bunker
-							bunker.upgrade(this);
+							bunker.upgrade(this, environment);
+							this.hide();
+							move(environment, bunker.x, bunker.y);
+							bunkerFound = false;
+							bunker = null;
+							break;
 						}
-						bunkerFound = false;
-						bunker = null;
-						humansGroup.clear();
 					}
-					else
+					else if(!zombieFound)
 					{
-						if(bunkerFound && bunker.isFull())
+						if(bunkerFound)
 						{
-							// Check humans in the bunker
-							for(int k = 0; k < humansGroup.size(); k++)
+							if(bunker.isFull())
 							{
-								if(!bunker.isInBunker(humansGroup.get(k)))
-								{
-									move(environment, humansGroup.get(k).x, humansGroup.get(k).y);
-									break;
-								}
+								bunkerFound = false;
+								bunker = null;
+								doRandomMove = true;
+							}
+							else
+							{
+								move(environment, bunker.x, bunker.y);
+								bunkerFound = false;
+								bunker = null;
+								break;
 							}
 						}
 						else if(!humansGroup.isEmpty())
 						{
 							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
+							humansGroup.clear();
+							break;
 						}
-						bunkerFound = false;
-						bunker = null;
-						humansGroup.clear();
+						else
+						{
+							doRandomMove = true;
+						}
 					}
 					
-					if(!doRandomMove)
+					if(!doRandomMove || zombieFound)
 						break;
 				}
 				if(doRandomMove)
@@ -249,7 +306,7 @@ public class Human extends Element
 		}
 		else
 		{
-			// TODO Supprimer humain + ajouter zombie
+			environment.addZombie(x, y);
 			environment.grid.remove(this);
 			this.stoppable.stop();
 		}
@@ -265,7 +322,7 @@ public class Human extends Element
 		ArrayList<Bag> result = new ArrayList<Bag>();
 //		this.perception = (int)(Math.random() * Constants.HUMAN_PERCEPTION_MAX) + 1;
 		
-		for(int i = 0; i <= this.perception; i++)
+		for(int i = 0; i <= (this.perception + 1); i++)
 		{
 			result.add(i, new Bag());
 		}
@@ -281,7 +338,7 @@ public class Human extends Element
 				double distance = Math.sqrt(Math.pow(xB - this.x, 2) + Math.pow(yB - this.y, 2));
 				if(distance > (this.perception + 1))
 				{
-					distance = environment.gridWidth - distance;
+					distance = Math.abs(this.environment.gridWidth - distance);
 				}
 				result.get((int)distance).add(object);
 			}
@@ -326,17 +383,17 @@ public class Human extends Element
 			case 1:
 				// Touch a leg
 				zombie.bodyShot(Zombie.BODY_PART.LEG);
-				XP ++;
+				XP +=2;
 				break;
 			case 2:
 				// Touch an arm
 				zombie.bodyShot(Zombie.BODY_PART.ARM);
-				XP ++;
+				XP +=2;
 				break;
 			case 3:
 				// Touch a trunk
 				zombie.bodyShot(Zombie.BODY_PART.TRUNK);
-				XP += 2;
+				XP += 3;
 				break;
 			case 4:
 				// Headshot
@@ -369,23 +426,24 @@ public class Human extends Element
 		{
 			maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_5;
 		}
+		munitions = maxMunitions;
 	}
 	
-	private void move(Environment model, int l, int c)
+	private void move(Environment env, int l, int c)
 	{
 		this.numberOfRandom = 0;
 		double distance = Math.sqrt(Math.pow(l - this.x, 2) + Math.pow(c - this.y, 2));
 		
-		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
-		
-		if(distance > 0 && distance <= this.speed)
+		this.speed = (int)(Math.random() * (Constants.HUMAN_SPEED_MAX -1)) + 1;
+//		System.out.println((int)distance);
+		if((int)distance > 0 && (int)distance <= this.speed)
 		{
 			// We move directly to the case (l,c)
-			model.grid.setObjectLocation(this, model.grid.stx(l), model.grid.sty(c));
-			x = model.grid.stx(l);
-			y = model.grid.sty(c);
+			env.grid.setObjectLocation(this, env.grid.stx(l), env.grid.sty(c));
+			x = env.grid.stx(l);
+			y = env.grid.sty(c);
 		}
-		else if(distance > 0)
+		else if((int)distance > 0)
 		{
 			if(l == this.x) // If we are on the same column
 			{
@@ -393,17 +451,19 @@ public class Human extends Element
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y + 1));
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y + 1));
+						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.TOP);
 				}
 				else if(this.y > c) // Move down
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y - 1));
-						y = model.grid.sty(y - 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y - 1));
+						y = env.grid.sty(y - 1);
 					}
+					this.setImage(Direction.BOTTOM);
 				}
 			}
 			else if(c == this.y) // If we are on the same row
@@ -412,17 +472,19 @@ public class Human extends Element
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y));
-						x = model.grid.stx(x + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y));
+						x = env.grid.stx(x + 1);
 					}
+					this.setImage(Direction.RIGHT);
 				}
 				else if(this.x > l) // Move left
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y));
-						x = model.grid.stx(x - 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x - 1), env.grid.sty(y));
+						x = env.grid.stx(x - 1);
 					}
+					this.setImage(Direction.LEFT);
 				}
 			}
 			else
@@ -431,41 +493,44 @@ public class Human extends Element
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
-						x = model.grid.stx(x + 1);
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y + 1));
+						x = env.grid.stx(x + 1);
+						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.BOTTOM);
 				}
 				else if(this.x < l && this.y > c) // Move up left
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y - 1));
-						x = model.grid.stx(x + 1);
-						y = model.grid.sty(y - 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y - 1));
+						x = env.grid.stx(x + 1);
+						y = env.grid.sty(y - 1);
 					}
+					this.setImage(Direction.TOP);
 				}
 				else if(this.x > l && this.y < c) // Move down right
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y + 1));
-						x = model.grid.stx(x - 1);
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x - 1), env.grid.sty(y + 1));
+						x = env.grid.stx(x - 1);
+						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.BOTTOM);
 				}
 				else if(this.x > l && this.y > c) // Move up right
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
-						x = model.grid.stx(x + 1);
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y + 1));
+						x = env.grid.stx(x + 1);
+						y = env.grid.sty(y + 1);
 					}
+					this.setImage(Direction.TOP);
 				}
 			}
-		}
-			
+		}	
 	}
 	
 	/**
@@ -503,17 +568,20 @@ public class Human extends Element
 				this.direction = Direction.TOP;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y - randomB));
 				y = model.grid.sty(y - randomB);
+				this.setImage(Direction.TOP);
 				break;
 			case BOTTOM:
 				this.direction = Direction.BOTTOM;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y + randomB));
 				y = model.grid.sty(y + randomB);
+				this.setImage(Direction.BOTTOM);
 				break;
 			case LEFT:
 				// LEFT
 				this.direction = Direction.LEFT;
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), y);
 				x = model.grid.stx(x - randomB);
+				this.setImage(Direction.LEFT);
 				break;
 			case TOPLEFT:
 				// TOPLEFT
@@ -521,6 +589,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y - randomB);
+				this.setImage(Direction.TOP);
 				break;
 			case TOPRIGHT:
 				// TOPRIGHT
@@ -528,6 +597,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y - randomB);
+				this.setImage(Direction.TOP);
 				break;
 			case BOTTOMLEFT:
 				// BOTTOMLEFT
@@ -535,6 +605,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y + randomB);
+				this.setImage(Direction.BOTTOM);
 				break;
 			case BOTTOMRIGHT:
 				// BOTTOMRIGHT
@@ -542,14 +613,110 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y + randomB);
+				this.setImage(Direction.BOTTOM);
 				break;
 			default:
 				// RIGHT
 				this.direction = Direction.RIGHT;
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), y);
 				x = model.grid.stx(x + randomB);
+				this.setImage(Direction.RIGHT);
 				break;
 			}
 		this.numberOfRandom++;
+	}
+	
+	/**
+	 * Public method to attack a human
+	 * @param damage
+	 */
+	public void attack(int damages)
+	{
+		this.life -= damages;
+		this.isBitten = true;
+	}
+	
+	public void setImage(Direction direction)
+	{
+		ImageIcon imageIcon = null;
+		
+		switch(direction)
+		{
+		case BOTTOM:
+			imageIcon = new ImageIcon("ressources/human_bottom.png");
+			break;
+		case TOP:
+			imageIcon = new ImageIcon("ressources/human_up.png");
+			break;
+		case LEFT:
+			imageIcon = new ImageIcon("ressources/human_left.png");
+			break;
+		case RIGHT:
+			imageIcon = new ImageIcon("ressources/human_right.png");
+			break;
+		default:
+			break;
+		}
+		
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(imageIcon));
+		environment.environmentUI.display.repaint();
+	}
+	
+	/**
+	 * Hide human image
+	 */
+	public void hide()
+	{
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("")));
+		environment.environmentUI.display.repaint();
+	}
+	
+	/**
+	 * Show human image
+	 */
+	public void show()
+	{
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/human_bottom.png")));
+		environment.environmentUI.display.repaint();
+	}
+
+	public int getSpeed()
+	{
+		return speed;
+	}
+
+	public int getPerception()
+	{
+		return perception;
+	}
+
+	public int getLife()
+	{
+		return life;
+	}
+
+	public int getWeaponLevel()
+	{
+		return weaponLevel;
+	}
+
+	public int getMunitions()
+	{
+		return munitions;
+	}
+
+	public int getMaxMunitions()
+	{
+		return maxMunitions;
+	}
+
+	public int getXP()
+	{
+		return XP;
+	}
+
+	public boolean isBitten()
+	{
+		return isBitten;
 	}
 }
