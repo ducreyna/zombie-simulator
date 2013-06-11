@@ -154,10 +154,8 @@ public class Human extends Element
 				// We have enough munitions and life
 				for(i = 0; i < neighboursArray.size(); i++)
 				{
-//					System.out.println(neighboursArray.get(i).size());
 					for(j = 0; j < neighboursArray.get(i).size(); j++)
 					{
-//						System.out.println(neighboursArray.get(i).get(j));
 						doRandomMove = false;
 						
 						if(i == 0)
@@ -196,8 +194,6 @@ public class Human extends Element
 							else if(neighboursArray.get(i).get(j) instanceof Human)
 							{
 								humansGroup.add((Human) neighboursArray.get(i).get(j));
-//								move(environment, ((Human)neighboursArray.get(i).get(j)).x, ((Human)neighboursArray.get(i).get(j)).y);
-//								break;
 							}
 						}
 					}
@@ -207,14 +203,11 @@ public class Human extends Element
 						// Elements on the same case
 						if(!bunkerFound)
 						{
-//							System.out.println(humansGroup.size());
 							humansGroup.remove(this);
 							 if(humansGroup.size() >= 1)
 							 {
-								 move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
-//								 humansGroup.clear();
-								 humansGroup.add(this);
-//								 System.out.println(humansGroup);
+								move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
+								humansGroup.add(this);
 								Bunker buildBunker = new Bunker();
 								buildBunker.setHumans(humansGroup);
 								environment.addElement(buildBunker, this.x, this.y);
@@ -228,7 +221,6 @@ public class Human extends Element
 						}
 						else if(!bunker.isInBunker(this) && !bunker.isFull())
 						{
-//							System.out.println("J'intègre le bunker");
 							// We integrate the bunker
 							bunker.upgrade(this, environment);
 							move(environment, bunker.x, bunker.y);
@@ -241,16 +233,6 @@ public class Human extends Element
 					{
 						if(bunkerFound)
 						{
-//							System.out.println("Je suis complet");
-							// Check humans in the bunker
-//							for(int k = 0; k < humansGroup.size(); k++)
-//							{
-//								if(!bunker.isInBunker(humansGroup.get(k)))
-//								{
-//									move(environment, humansGroup.get(k).x, humansGroup.get(k).y);
-//									break;
-//								}
-//							}
 							if(bunker.isFull())
 							{
 								bunkerFound = false;
@@ -267,16 +249,12 @@ public class Human extends Element
 						}
 						else if(!humansGroup.isEmpty())
 						{
-//							System.out.println("Je vais voir un humain " + humansGroup.get(0).x +
-//									" : " + humansGroup.get(0).y);
-							
-							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
+//							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
 							humansGroup.clear();
 							break;
 						}
 						else
 						{
-							System.out.println("Je n'ai pas trouvé");
 							doRandomMove = true;
 						}
 					}
@@ -591,5 +569,10 @@ public class Human extends Element
 				break;
 			}
 		this.numberOfRandom++;
+	}
+	
+	public void attack(int damage)
+	{
+		this.life -= damage;
 	}
 }

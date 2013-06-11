@@ -49,7 +49,7 @@ public class Environment extends SimState
 		
 		setHumanCount(10);
 		setZombieCount(5);
-		setBonusPackCount(5);
+		setBonusPackCount(3);
 
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];
@@ -74,15 +74,15 @@ public class Environment extends SimState
 	        addElement(zombies[i], location.x, location.y);
         }
 		
-//		// add randomly bonus packs
-//		for(int i = 0; i < bonusPackCount; i++)
-//        {
-//	        bonusPacks[i] = new BonusPack();
-//	        
-//	        Int2D location = getEmpty2DLocation();
-//	        
-//			addElement(bonusPacks[i], location.x, location.y);
-//        }
+		// add randomly bonus packs
+		for(int i = 0; i < bonusPackCount; i++)
+        {
+	        bonusPacks[i] = new BonusPack();
+	        
+	        Int2D location = getEmpty2DLocation();
+	        
+			addElement(bonusPacks[i], location.x, location.y);
+        }
 		
 	}
 	
