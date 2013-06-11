@@ -9,13 +9,13 @@ public class Environment extends SimState
 {
 	private static final long serialVersionUID = 1;
 
-	public int gridHeight = 100;
-	public int gridWidth = 100;
+	public int gridHeight = 30;
+	public int gridWidth = 30;
 	public EnvironmentUI environmentUI;
 
     public DoubleGrid2D perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight, 0);
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
-	
+
 	private int humanCount;
 	private int zombieCount;
 	private int bonusPackCount;
@@ -29,7 +29,7 @@ public class Environment extends SimState
 		doLoop(Environment.class, args);
 		System.exit(0);
 	}
-	
+
 	public Environment(long seed)
 	{
 		super(seed);
@@ -46,50 +46,50 @@ public class Environment extends SimState
 		// it's faster to make a new sparse field than to clear it
 		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
-		
-		setHumanCount(35);
-		setZombieCount(60);
-		setBonusPackCount(15);
+
+		setHumanCount(15);
+		setZombieCount(20);
+		setBonusPackCount(10);
 
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];
 		bonusPacks = new BonusPack[bonusPackCount];
-		        
-		// add randomly humans 
+
+		// add randomly humans
 		for(int i = 0; i < humanCount; i++)
         {
 	        humans[i] = new Human();
 
 	        Int2D location = getEmpty2DLocation();
-			
+
 	        addElement(humans[i], location.x, location.y);
         }
-		
+
 		for(int i = 0; i < zombieCount; i++)
         {
 	        zombies[i] = new Zombie();
-	        
+
 	        Int2D location = getEmpty2DLocation();
-			
+
 	        addElement(zombies[i], location.x, location.y);
         }
-		
+
 		// add randomly bonus packs
 		for(int i = 0; i < bonusPackCount; i++)
         {
 	        bonusPacks[i] = new BonusPack();
-	        
+
 	        Int2D location = getEmpty2DLocation();
-	        
+
 			addElement(bonusPacks[i], location.x, location.y);
         }
 	}
-	
+
 	public void setEnvironmentUI(EnvironmentUI environmentUI)
 	{
 		this.environmentUI = environmentUI;
 	}
-	
+
 	public int getGridHeight()
 	{
 		return gridHeight;
@@ -132,7 +132,7 @@ public class Environment extends SimState
 		if (_val >= 0)
 			bonusPackCount = _val;
 	}
-	
+
 	/**
 	 * There is no other object at the returned location
 	 */
@@ -146,22 +146,22 @@ public class Environment extends SimState
 		}
 		return location;
 	}
-	
+
 	public boolean addBonusPack()
 	{
 		Int2D location = getEmpty2DLocation();
 		return addElement(new BonusPack(), location.x, location.y);
 	}
-	
+
 	public boolean addZombie(int _x, int _y)
 	{
 		return addElement(new Zombie(), _x, _y);
 	}
-	
+
 	public boolean addElement(Element _e, int _x, int _y)
-    {		
+    {
 		_e.x = _x;
-		_e.y = _y;									
+		_e.y = _y;
 		Stoppable stoppable  = schedule.scheduleRepeating(_e);
 		_e.stoppable = stoppable;
 		return grid.setObjectLocation(_e, _x, _y);
