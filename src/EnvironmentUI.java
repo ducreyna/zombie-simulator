@@ -59,7 +59,7 @@ public class EnvironmentUI extends GUIState
 	public void setupPortrayals()
 	{
 		environment = (Environment) state;
-		env.setEnvironmentUI(this);
+		environment.setEnvironmentUI(this);
 
 		// TODO
         ColorMap map = new SimpleColorMap(0, 10, Color.green, Color.red);
