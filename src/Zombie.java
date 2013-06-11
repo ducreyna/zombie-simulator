@@ -36,7 +36,7 @@ public class Zombie extends Element
 			environment.grid.remove(this);
 			this.stoppable.stop();
 		}
-		else
+		else if(!this.isBlockedForOneStep)
 		{
 			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
 			
@@ -45,9 +45,57 @@ public class Zombie extends Element
 			
 			if(this.neighboursArray.get(0).size() != 0)
 			{
-				
+				// Bouffer humain ou détruit bunker
+				Bag bag = (Bag)this.neighboursArray.get(0);
+				if(bag.get(0) instanceof Human)
+				{
+					int damage = 2;
+					((Human)bag.get(0)).attack(damage);
+				}
+				else
+				{
+					int damage = 2;
+					((Bunker)bag.get(0)).attack(damage);
+				}
+			} 
+			else if(this.neighboursArray.get(1).size() != 0)
+			{
+				// Bouffer human ou détruit bunker
+				Bag bag = (Bag)this.neighboursArray.get(1);
+				if(bag.get(0) instanceof Human)
+				{
+					int damage = 2;
+					((Human)bag.get(0)).attack(damage);
+				}
+				else
+				{
+					int damage = 2;
+					((Bunker)bag.get(0)).attack(damage);
+				}
 			}
-			
+			else
+			{
+				Boolean loopFinished = true;
+				for(Bag bag : this.neighboursArray)
+				{
+					if(bag.size() != 0)
+					{
+						Element elt = (Element)bag.get(0);
+						this.move(this.environment, elt.x, elt.y);
+						loopFinished = false;
+						break;
+					}
+				}
+				
+				if(!loopFinished)
+				{
+					this.randomMove(this.environment);
+				}
+			}	
+		}
+		else
+		{
+			this.isBlockedForOneStep = false;
 		}
 	}
 
@@ -118,6 +166,9 @@ public class Zombie extends Element
 	{
 		this.numberOfRandom = 0;
 		int distance = Math.max(Math.abs(this.x - l), Math.abs(this.y - c));
+		
+//		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
+//		System.out.println((int)distance);
 		
 		if(distance <= this.speed)
 		{
