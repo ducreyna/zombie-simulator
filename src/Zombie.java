@@ -39,9 +39,14 @@ public class Zombie extends Element
 		else
 		{
 			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
-			//@SuppressWarnings("rawtypes")
-			//Iterator iterator = neighbours.iterator();
-			//neighboursArray = this.perception();
+			
+			
+			this.neighboursArray = this.perception();
+			
+			if(this.neighboursArray.get(0).size() != 0)
+			{
+				
+			}
 			
 		}
 	}
@@ -60,13 +65,19 @@ public class Zombie extends Element
 			result.add(k, new Bag());
 		}
 		
-		for(int i=0; i < posX.size(); i++)
+		for(int i=1; i < neighbours.size(); i++)
 		{
 			Object object = neighbours.get(i);
 			if((object instanceof Human) || (object instanceof Bunker))
 			{
-				int index = Math.max(this.x - Math.abs(this.x-Math.abs(posX.get(i))), this.y - Math.abs(this.y -Math.abs(posY.get(i))));
-				result.get(index).add(object);
+				int xB = ((Element)neighbours.get(i)).x;
+				int yB = ((Element)neighbours.get(i)).y;
+				double distance = Math.sqrt(Math.pow(xB - this.x, 2) + Math.pow(yB - this.y, 2));
+				if(distance > (this.perception + 1))
+				{ 
+					distance = Math.abs(this.environment.gridWidth - distance);
+				}
+				result.get((int)distance).add(object);
 			}
 		}
 		
