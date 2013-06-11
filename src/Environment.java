@@ -48,7 +48,7 @@ public class Environment extends SimState
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
 		setHumanCount(10);
-		setZombieCount(25);
+		setZombieCount(5);
 		setBonusPackCount(5);
 
 		humans = new Human[humanCount];
@@ -73,7 +73,7 @@ public class Environment extends SimState
 			
 	        addElement(zombies[i], location.x, location.y);
         }
-		
+        
 		// add randomly bonus packs
 		for(int i = 0; i < bonusPackCount; i++)
         {
