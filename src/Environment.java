@@ -83,7 +83,6 @@ public class Environment extends SimState
 	        
 			addElement(bonusPacks[i], location.x, location.y);
         }
-		
 	}
 	
 	public void setEnvironmentUI(EnvironmentUI environmentUI)
