@@ -9,8 +9,9 @@ public class Environment extends SimState
 {
 	private static final long serialVersionUID = 1;
 
-	public int gridHeight = 60;
-	public int gridWidth = 60;
+	public int gridHeight = 20;
+	public int gridWidth = 20;
+	public EnvironmentUI environmentUI;
 
     public DoubleGrid2D perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight, 0);
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
@@ -40,7 +41,7 @@ public class Environment extends SimState
 		perceptionGrid = new DoubleGrid2D(gridWidth, gridHeight,0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 		
-		setHumanCount(20);
+		setHumanCount(10);
 		setZombieCount(25);
 		setBonusPackCount(5);
 
@@ -64,34 +65,39 @@ public class Environment extends SimState
         }
 		
 		// add randomly zombies 
-		for(int i = 0; i < zombieCount; i++)
-        {
-	        zombies[i] = new Zombie();
-	        
-	        Int2D location = getEmpty2DLocation();
-			
-			zombies[i].x = location.x;
-			zombies[i].y = location.y;
-			
-	        grid.setObjectLocation(zombies[i], location.x, location.y);
-	        Stoppable stoppable  = schedule.scheduleRepeating(zombies[i]);
-	        zombies[i].stoppable = stoppable;
-        }
+//		for(int i = 0; i < zombieCount; i++)
+//        {
+//	        zombies[i] = new Zombie();
+//	        
+//	        Int2D location = getEmpty2DLocation();
+//			
+//			zombies[i].x = location.x;
+//			zombies[i].y = location.y;
+//			
+//	        grid.setObjectLocation(zombies[i], location.x, location.y);
+//	        Stoppable stoppable  = schedule.scheduleRepeating(zombies[i]);
+//	        zombies[i].stoppable = stoppable;
+//        }
 		
 		// add randomly bonus packs
-		for(int i = 0; i < bonusPackCount; i++)
-        {
-	        bonusPacks[i] = new BonusPack();
-	        
-	        Int2D location = getEmpty2DLocation();
-			
-			bonusPacks[i].x = location.x;
-			bonusPacks[i].y = location.y;
-			
-	        grid.setObjectLocation(bonusPacks[i], location.x, location.y);
-	        Stoppable stoppable  = schedule.scheduleRepeating(bonusPacks[i]);
-	        bonusPacks[i].stoppable = stoppable;
-        }
+//		for(int i = 0; i < bonusPackCount; i++)
+//        {
+//	        bonusPacks[i] = new BonusPack();
+//	        
+//	        Int2D location = getEmpty2DLocation();
+//			
+//			bonusPacks[i].x = location.x;
+//			bonusPacks[i].y = location.y;
+//			
+//	        grid.setObjectLocation(bonusPacks[i], location.x, location.y);
+//	        Stoppable stoppable  = schedule.scheduleRepeating(bonusPacks[i]);
+//	        bonusPacks[i].stoppable = stoppable;
+//        }
+	}
+	
+	public void setEnvironmentUI(EnvironmentUI environmentUI)
+	{
+		this.environmentUI = environmentUI;
 	}
 	
 	public int getGridHeight()

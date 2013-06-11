@@ -16,11 +16,11 @@ public class Constants
 	public static int ZOMBIE_SPEED_MAX = 4;
 	public static int ZOMBIE_PERCEPTION_MAX = 6;
 	
-	public static int BUNKER_LIFE_MAX_LEVEL_1 = 10;
 	public static int BUNKER_LIFE_MAX_LEVEL_2 = 15;
 	public static int BUNKER_LIFE_MAX_LEVEL_3 = 20;
 	public static int BUNKER_LIFE_MAX_LEVEL_4 = 25;
-	public static int BUNKER_LEVEL_MAX = 4;
+	public static int BUNKER_LIFE_MAX_LEVEL_5 = 30;
+	public static int BUNKER_LEVEL_MAX = 5;
 	
 	public static enum Direction
 	{

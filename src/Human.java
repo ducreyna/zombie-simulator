@@ -22,6 +22,8 @@ public class Human extends Element implements Steppable
 	private int maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
 	private int XP = 0;
 	
+	public boolean inBunker = false;
+	
 	private enum Direction
 	{
 		RIGHT,
@@ -153,11 +155,12 @@ public class Human extends Element implements Steppable
 				ArrayList<Human> humansGroup = new ArrayList<Human>();
 				Bunker bunker = null;
 				
+				int i,j;
 				// We have enough munitions and life
-				for(int i = 0; i < neighboursArray.size(); i++)
+				for(i = 0; i < neighboursArray.size(); i++)
 				{
 //					System.out.println(neighboursArray.get(i).size());
-					for(int j = 0; j < neighboursArray.get(i).size(); j++)
+					for(j = 0; j < neighboursArray.get(i).size(); j++)
 					{
 //						System.out.println(neighboursArray.get(i).get(j));
 						doRandomMove = false;
@@ -208,47 +211,82 @@ public class Human extends Element implements Steppable
 						// Elements on the same case
 						if(!bunkerFound && !zombieFound)
 						{
+//							System.out.println(humansGroup.size());
+							humansGroup.remove(this);
 							 if(humansGroup.size() >= 1)
 							 {
-								// TODO Construire un bunker								
-						        bunker = new Bunker();									
-								bunker.x = this.x;
-								bunker.y = this.y;									
-								environment.grid.setObjectLocation(bunker, this.x, this.y);
-						        Stoppable stoppable  = environment.schedule.scheduleRepeating(bunker);
-						        bunker.stoppable = stoppable;
+								 move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
+//								 humansGroup.clear();
+								 humansGroup.add(this);
+//								 System.out.println(humansGroup);
+								Bunker buildBunker = new Bunker();
+								buildBunker.setHumans(humansGroup);
+								buildBunker.x = this.x;
+								buildBunker.y = this.y;									
+								environment.grid.setObjectLocation(buildBunker, this.x, this.y);
+						        Stoppable stoppable  = environment.schedule.scheduleRepeating(buildBunker);
+						        buildBunker.stoppable = stoppable;
+						        humansGroup.clear();
+						        break;
+							 }
+							 else
+							 {
+								 doRandomMove = true;
 							 }
 						}
 						else if(!bunker.isInBunker(this) && !bunker.isFull())
 						{
+//							System.out.println("J'intègre le bunker");
 							// We integrate the bunker
-							bunker.upgrade(this);
+							bunker.upgrade(this, environment);
+							move(environment, bunker.x, bunker.y);
+							bunkerFound = false;
+							bunker = null;
+							break;
 						}
-						bunkerFound = false;
-						bunker = null;
-						humansGroup.clear();
 					}
 					else
 					{
-						if(bunkerFound && bunker.isFull())
+						if(bunkerFound)
 						{
+//							System.out.println("Je suis complet");
 							// Check humans in the bunker
-							for(int k = 0; k < humansGroup.size(); k++)
+//							for(int k = 0; k < humansGroup.size(); k++)
+//							{
+//								if(!bunker.isInBunker(humansGroup.get(k)))
+//								{
+//									move(environment, humansGroup.get(k).x, humansGroup.get(k).y);
+//									break;
+//								}
+//							}
+							if(bunker.isFull())
 							{
-								if(!bunker.isInBunker(humansGroup.get(k)))
-								{
-									move(environment, humansGroup.get(k).x, humansGroup.get(k).y);
-									break;
-								}
+								bunkerFound = false;
+								bunker = null;
+								doRandomMove = true;
+							}
+							else
+							{
+								move(environment, bunker.x, bunker.y);
+								bunkerFound = false;
+								bunker = null;
+								break;
 							}
 						}
 						else if(!humansGroup.isEmpty())
 						{
+//							System.out.println("Je vais voir un humain " + humansGroup.get(0).x +
+//									" : " + humansGroup.get(0).y);
+							
 							move(environment, humansGroup.get(0).x, humansGroup.get(0).y);
+							humansGroup.clear();
+							break;
 						}
-						bunkerFound = false;
-						bunker = null;
-						humansGroup.clear();
+						else
+						{
+							System.out.println("Je n'ai pas trouvé");
+							doRandomMove = true;
+						}
 					}
 					
 					if(!doRandomMove)
@@ -292,7 +330,7 @@ public class Human extends Element implements Steppable
 				double distance = Math.sqrt(Math.pow(xB - this.x, 2) + Math.pow(yB - this.y, 2));
 				if(distance > (this.perception + 1))
 				{
-					distance = this.environment.gridWidth - distance;
+					distance = Math.abs(this.environment.gridWidth - distance);
 				}
 				result.get((int)distance).add(object);
 			}
@@ -382,21 +420,21 @@ public class Human extends Element implements Steppable
 		}
 	}
 	
-	private void move(Environment model, int l, int c)
+	private void move(Environment env, int l, int c)
 	{
 		this.numberOfRandom = 0;
 		double distance = Math.sqrt(Math.pow(l - this.x, 2) + Math.pow(c - this.y, 2));
 		
-		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
-		
-		if(distance > 0 && distance <= this.speed)
+//		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
+//		System.out.println((int)distance);
+		if((int)distance > 0 && (int)distance <= this.speed)
 		{
 			// We move directly to the case (l,c)
-			model.grid.setObjectLocation(this, model.grid.stx(l), model.grid.sty(c));
-			x = model.grid.stx(l);
-			y = model.grid.sty(c);
+			env.grid.setObjectLocation(this, env.grid.stx(l), env.grid.sty(c));
+			x = env.grid.stx(l);
+			y = env.grid.sty(c);
 		}
-		else if(distance > 0)
+		else if((int)distance > 0)
 		{
 			if(l == this.x) // If we are on the same column
 			{
@@ -404,16 +442,16 @@ public class Human extends Element implements Steppable
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y + 1));
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y + 1));
+						y = env.grid.sty(y + 1);
 					}
 				}
 				else if(this.y > c) // Move down
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y - 1));
-						y = model.grid.sty(y - 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y - 1));
+						y = env.grid.sty(y - 1);
 					}
 				}
 			}
@@ -423,16 +461,16 @@ public class Human extends Element implements Steppable
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y));
-						x = model.grid.stx(x + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y));
+						x = env.grid.stx(x + 1);
 					}
 				}
 				else if(this.x > l) // Move left
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y));
-						x = model.grid.stx(x - 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x - 1), env.grid.sty(y));
+						x = env.grid.stx(x - 1);
 					}
 				}
 			}
@@ -442,41 +480,40 @@ public class Human extends Element implements Steppable
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
-						x = model.grid.stx(x + 1);
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y + 1));
+						x = env.grid.stx(x + 1);
+						y = env.grid.sty(y + 1);
 					}
 				}
 				else if(this.x < l && this.y > c) // Move up left
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y - 1));
-						x = model.grid.stx(x + 1);
-						y = model.grid.sty(y - 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y - 1));
+						x = env.grid.stx(x + 1);
+						y = env.grid.sty(y - 1);
 					}
 				}
 				else if(this.x > l && this.y < c) // Move down right
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y + 1));
-						x = model.grid.stx(x - 1);
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x - 1), env.grid.sty(y + 1));
+						x = env.grid.stx(x - 1);
+						y = env.grid.sty(y + 1);
 					}
 				}
 				else if(this.x > l && this.y > c) // Move up right
 				{
 					for(int i=0; i<this.speed; i++)
 					{
-						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
-						x = model.grid.stx(x + 1);
-						y = model.grid.sty(y + 1);
+						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y + 1));
+						x = env.grid.stx(x + 1);
+						y = env.grid.sty(y + 1);
 					}
 				}
 			}
-		}
-			
+		}	
 	}
 	
 	/**
