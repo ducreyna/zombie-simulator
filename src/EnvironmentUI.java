@@ -73,7 +73,7 @@ public class EnvironmentUI extends GUIState
    
         environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon));
         environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));
-        environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Color.black));
+        environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Constants.BONUSPACK_COLOR));
         environmentPortrayal.setPortrayalForClass(Bunker.class, new ImagePortrayal2D(bunkerIcon));
         
 		// reschedule the displayer

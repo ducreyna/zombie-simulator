@@ -1,26 +1,24 @@
 import sim.engine.SimState;
 import sim.engine.Stoppable;
-import sim.field.grid.Grid2D;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Bag;
 import sim.util.Int2D;
-import sim.util.IntBag;
 
 public class Environment extends SimState
 {
 	private static final long serialVersionUID = 1;
 
-	public int gridHeight = 60;
-	public int gridWidth = 60;
+	public int gridHeight = Constants.GRID_HEIGHT;
+	public int gridWidth = Constants.GRID_WIDTH;
 	public EnvironmentUI environmentUI;
 
     public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // initial value : 0 // TODO
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
 
-	private int humanCount;
-	private int zombieCount;
-	private int bonusPackCount;
+	private int humanCount = Constants.INIT_HUMAN_COUNT;
+	private int zombieCount = Constants.INIT_ZOMBIE_COUNT;
+	private int bonusPackCount = Constants.INIT_BONUSPACK_COUNT;
 
 	Human[] humans;
 	Zombie[] zombies;
@@ -49,9 +47,9 @@ public class Environment extends SimState
 		perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // TODO
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 
-		setHumanCount(15);
-		setZombieCount(20);
-		setBonusPackCount(10);
+		setHumanCount(Constants.INIT_HUMAN_COUNT);
+		setZombieCount(Constants.INIT_ZOMBIE_COUNT);
+		setBonusPackCount(Constants.INIT_BONUSPACK_COUNT);
 
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];

@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
-import sim.app.virus.Evil;
 import sim.engine.SimState;
 import sim.portrayal.simple.ImagePortrayal2D;
 
