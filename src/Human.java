@@ -44,6 +44,7 @@ public class Human extends Element
 	
 	public boolean goAway = false;
 	private int cptStepGoAway = 0;
+	private Bunker myBunker = null;
 	
 	@Override
 	public void step(SimState state) 
@@ -244,7 +245,7 @@ public class Human extends Element
 								move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
 								humansGroup.add(this);
 								Bunker buildBunker = new Bunker();
-								buildBunker.setHumans(humansGroup);
+//								buildBunker.setHumans(humansGroup);
 								environment.addElement(buildBunker, this.x, this.y);
 						        humansGroup.clear();
 						        this.hide();
@@ -260,6 +261,7 @@ public class Human extends Element
 						{
 							// We integrate the bunker
 							bunker.upgrade(this, environment);
+							myBunker = bunker;
 							this.hide();
 							move(environment, bunker.x, bunker.y);
 							bunkerFound = false;
@@ -382,22 +384,50 @@ public class Human extends Element
 			{
 			case 1:
 				// Touch a leg
-				zombie.bodyShot(Zombie.BODY_PART.LEG);
+				if(myBunker != null && myBunker.getLevel() >= 4)
+				{
+					// TODO soigner zombie
+				}
+				else
+				{
+					zombie.bodyShot(Zombie.BODY_PART.LEG);
+				}
 				XP +=2;
 				break;
 			case 2:
 				// Touch an arm
-				zombie.bodyShot(Zombie.BODY_PART.ARM);
+				if(myBunker != null && myBunker.getLevel() >= 4)
+				{
+					// TODO soigner zombie
+				}
+				else
+				{
+					zombie.bodyShot(Zombie.BODY_PART.ARM);
+				}
 				XP +=2;
 				break;
 			case 3:
 				// Touch a trunk
-				zombie.bodyShot(Zombie.BODY_PART.TRUNK);
+				if(myBunker != null && myBunker.getLevel() >= 4)
+				{
+					// TODO soigner zombie
+				}
+				else
+				{
+					zombie.bodyShot(Zombie.BODY_PART.TRUNK);
+				}
 				XP += 3;
 				break;
 			case 4:
 				// Headshot
-				zombie.headShot();
+				if(myBunker != null && myBunker.getLevel() >= 4)
+				{
+					// TODO soigner zombie
+				}
+				else
+				{
+					zombie.headShot();
+				}
 				XP += 5;
 				break;
 			default:
@@ -718,5 +748,10 @@ public class Human extends Element
 	public boolean isBitten()
 	{
 		return isBitten;
+	}
+
+	public void setMyBunker(Bunker myBunker)
+	{
+		this.myBunker = myBunker;
 	}
 }

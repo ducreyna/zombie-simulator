@@ -11,8 +11,8 @@ public class Environment extends SimState
 {
 	private static final long serialVersionUID = 1;
 
-	public int gridHeight = 60;
-	public int gridWidth = 60;
+	public int gridHeight = 30;
+	public int gridWidth = 30;
 	public EnvironmentUI environmentUI;
 
     public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // initial value : 0 // TODO
@@ -50,8 +50,8 @@ public class Environment extends SimState
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 
 		setHumanCount(15);
-		setZombieCount(20);
-		setBonusPackCount(10);
+		setZombieCount(10);
+		setBonusPackCount(3);
 
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];

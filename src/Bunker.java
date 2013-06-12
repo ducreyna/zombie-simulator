@@ -35,6 +35,7 @@ public class Bunker extends Element
 			{
 				if(humans.get(i).x != this.x || humans.get(i).y != this.y)
 				{
+					humans.get(i).setMyBunker(null);
 					humans.remove(i);
 					if(humans.size() > 0)
 					{
@@ -50,6 +51,10 @@ public class Bunker extends Element
 		}
 	}
 	
+	/**
+	 * Private methode to downgrade a bunker level when a human leaves it
+	 * @param env
+	 */
 	private void downgrade(Environment env)
 	{
 		ImageIcon bunkerIcon = null;
