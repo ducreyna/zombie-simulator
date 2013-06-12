@@ -18,7 +18,7 @@ public class EnvironmentUI extends GUIState
 {
 	public Display2D display;
 	public JFrame displayFrame;
-	Environment environment;
+	public Environment environment;
 
 	HexaSparseGridPortrayal2D environmentPortrayal = new HexaSparseGridPortrayal2D();
     HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception"); // TODO
@@ -60,7 +60,7 @@ public class EnvironmentUI extends GUIState
 	{
 		environment = (Environment) state;
 		environment.setEnvironmentUI(this);
-
+		
 		// TODO
         ColorMap map = new SimpleColorMap(0, 10, Color.green, Color.red);
         perceptionPortrayal.setField(environment.perceptionGrid);

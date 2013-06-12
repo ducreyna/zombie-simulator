@@ -4,6 +4,7 @@ import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Bag;
 import sim.util.Int2D;
+import sim.util.IntBag;
 
 public class Environment extends SimState
 {
@@ -55,30 +56,6 @@ public class Environment extends SimState
 		zombies = new Zombie[zombieCount];
 		bonusPacks = new BonusPack[bonusPackCount];
 		
-		// TODO
-		/*
-        humans[0] = new Human();			
-        addElement(humans[0], 8, 8);
-        IntBag xPosBag = new IntBag();
-        IntBag yPosBag = new IntBag();
-        grid.getHexagonalLocations(humans[0].x, humans[0].y, 1, SparseGrid2D.BOUNDED, true, xPosBag, yPosBag);
-        
-        for (int i = 0; i < xPosBag.size(); i++) {
-        	System.out.println("("+xPosBag.get(i)+","+yPosBag.get(i)+")");
-        }
-
-    	int[] _put;
-    	int x, y;
-    	// for each x and y position
-        for (int i = 0; i < xPosBag.size(); i++)
-        {
-			x = xPosBag.get(i);
-			y = yPosBag.get(i);
-			perceptionGrid.field[x][y] = 3;
-			System.out.println("("+x+","+y+")");
-        }
-        */
-		
 		// add randomly humans
 		for(int i = 0; i < humanCount; i++)
         {
@@ -87,6 +64,8 @@ public class Environment extends SimState
 	        Int2D location = getEmpty2DLocation();
 
 	        addElement(humans[i], location.x, location.y);
+	        
+	        //drawPerceptionForHuman(location.x, location.y);
         }
 
 		// add randomly zombies 
@@ -190,6 +169,27 @@ public class Environment extends SimState
 		_e.y = _y;									
 		Stoppable stoppable  = schedule.scheduleRepeating(_e);
 		_e.stoppable = stoppable;
+		//System.out.println("add element at ("+_x+","+_y+")");
 		return grid.setObjectLocation(_e, _x, _y);
+    }
+	
+	// TODO
+    private void drawPerceptionForHuman(int _x, int _y) {
+	    IntBag xPosBag = new IntBag();
+	    IntBag yPosBag = new IntBag();
+	    grid.getHexagonalLocations(_x, _y, 1, SparseGrid2D.UNBOUNDED, true, xPosBag, yPosBag); // TODO BOUNDED or UNBOUNDED
+	    
+	    for (int i = 0; i < xPosBag.size(); i++) {
+	    	System.out.println("("+xPosBag.get(i)+","+yPosBag.get(i)+")");
+	    }
+	    System.out.println("---");
+		int x, y;
+	    for (int i = 0; i < xPosBag.size(); i++)
+	    {
+			x = xPosBag.get(i);
+			y = yPosBag.get(i);
+			//perceptionGrid.field[x][y] = 3; // TODO : use stx after verification
+			System.out.println("("+grid.stx(x)+","+grid.stx(y)+")");
+	    }
     }
 }
