@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -6,9 +7,14 @@ import javax.swing.JFrame;
 import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
+import sim.display.Manipulating2D;
 import sim.engine.SimState;
+import sim.portrayal.DrawInfo2D;
+import sim.portrayal.LocationWrapper;
+import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
 import sim.portrayal.grid.HexaValueGridPortrayal2D;
+import sim.portrayal.inspector.StableInt2D;
 import sim.portrayal.simple.ImagePortrayal2D;
 import sim.portrayal.simple.OvalPortrayal2D;
 import sim.util.gui.ColorMap;
@@ -21,7 +27,7 @@ public class EnvironmentUI extends GUIState
 	public Environment environment;
 
 	HexaSparseGridPortrayal2D environmentPortrayal = new HexaSparseGridPortrayal2D();
-    HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception"); // TODO
+    HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception");
 
 	
 	public static void main(String[] args)
@@ -71,7 +77,23 @@ public class EnvironmentUI extends GUIState
         ImageIcon zombieIcon = new ImageIcon("ressources/zombie_bottom.png");
         ImageIcon bunkerIcon = new ImageIcon("ressources/bunker_2.png");
    
-        environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon));
+        environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon) {
+        	public boolean handleMouseEvent(GUIState gui, Manipulating2D manipulating, LocationWrapper wrapper, MouseEvent event, DrawInfo2D fieldPortrayalDrawInfo, int type)
+        	{
+        		// TODO super.handleMouseEvent(gui, manipulating, wrapper, event, fieldPortrayalDrawInfo, type)
+        		synchronized(gui.state.schedule)
+        		{
+        			if (type == SimplePortrayal2D.TYPE_HIT_OBJECT && event.getID() == event.MOUSE_CLICKED)
+        			{
+        				StableInt2D location = (StableInt2D) wrapper.getLocation();
+        				System.out.println("clic at "+location);
+        				environment.drawPerception(location.x, location.y, Constants.HUMAN_PERCEPTION_MAX);
+        				return true;
+        			}
+        			else return false;
+        		}
+        	}
+        });
         environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));
         environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Constants.BONUSPACK_COLOR));
         environmentPortrayal.setPortrayalForClass(Bunker.class, new ImagePortrayal2D(bunkerIcon));
@@ -116,7 +138,7 @@ public class EnvironmentUI extends GUIState
 		c.registerFrame(displayFrame);
 		displayFrame.setVisible(true);
 		
-		display.attach(perceptionPortrayal, "Human Perception"); // TODO
+		display.attach(perceptionPortrayal, "Human Perception");
 		display.attach(environmentPortrayal, "Environment");
 
 		// specify the backdrop color -- what gets painted behind the displays

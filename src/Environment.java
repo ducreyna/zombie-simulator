@@ -14,7 +14,7 @@ public class Environment extends SimState
 	public int gridWidth = Constants.GRID_WIDTH;
 	public EnvironmentUI environmentUI;
 
-    public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // initial value : 0 // TODO
+    public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
 
 	private int humanCount = Constants.INIT_HUMAN_COUNT;
@@ -45,7 +45,7 @@ public class Environment extends SimState
 		super.start();
 
 		// it's faster to make a new sparse field than to clear it
-		perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // TODO
+		perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 
 		setHumanCount(Constants.INIT_HUMAN_COUNT);
@@ -64,8 +64,6 @@ public class Environment extends SimState
 	        Int2D location = getEmpty2DLocation();
 
 	        addElement(humans[i], location.x, location.y);
-	        
-	        //drawPerceptionForHuman(location.x, location.y);
         }
 
 		// add randomly zombies 
@@ -173,23 +171,21 @@ public class Environment extends SimState
 		return grid.setObjectLocation(_e, _x, _y);
     }
 	
-	// TODO
-    private void drawPerceptionForHuman(int _x, int _y) {
-	    IntBag xPosBag = new IntBag();
-	    IntBag yPosBag = new IntBag();
-	    grid.getHexagonalLocations(_x, _y, 1, SparseGrid2D.UNBOUNDED, true, xPosBag, yPosBag); // TODO BOUNDED or UNBOUNDED
-	    
-	    for (int i = 0; i < xPosBag.size(); i++) {
-	    	System.out.println("("+xPosBag.get(i)+","+yPosBag.get(i)+")");
-	    }
-	    System.out.println("---");
-		int x, y;
-	    for (int i = 0; i < xPosBag.size(); i++)
-	    {
-			x = xPosBag.get(i);
-			y = yPosBag.get(i);
-			//perceptionGrid.field[x][y] = 3; // TODO : use stx after verification
-			System.out.println("("+grid.stx(x)+","+grid.stx(y)+")");
-	    }
+    public void drawPerception(int _x, int _y, int _dist)
+    {
+    	if (_x >= 0 && _y >= 0 && _dist > 0)
+    	{
+		    IntBag xPosBag = new IntBag();
+		    IntBag yPosBag = new IntBag();
+		    grid.getHexagonalLocations(_x, _y, _dist, SparseGrid2D.UNBOUNDED, true, xPosBag, yPosBag);
+	
+			int x, y;
+		    for (int i = 0; i < xPosBag.size(); i++)
+		    {
+				x = xPosBag.get(i);
+				y = yPosBag.get(i);
+				perceptionGrid.field[grid.stx(x)][grid.sty(y)] = 3;
+		    }
+    	}
     }
 }
