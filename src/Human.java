@@ -19,7 +19,7 @@ public class Human extends Element
 	private int maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
 	private int XP = 0;
 	
-	private enum Direction
+	enum Direction
 	{
 		RIGHT,
 		LEFT,
@@ -112,6 +112,7 @@ public class Human extends Element
 									// Zombie very close
 									doRandomMove = false;
 									shoot((Zombie) neighboursArray.get(i).get(j));
+									setImage(direction, true);
 //									break;
 								}
 							}
@@ -223,6 +224,7 @@ public class Human extends Element
 							{
 								zombieFound = true;
 								shoot((Zombie)neighboursArray.get(i).get(j));
+								setImage(direction, true);
 								break;
 							}
 						}
@@ -233,6 +235,7 @@ public class Human extends Element
 							{
 								zombieFound = true;
 								shoot((Zombie)neighboursArray.get(i).get(j));
+								setImage(direction, true);
 								break;
 							}
 							else if(neighboursArray.get(i).get(j) instanceof Bunker)
@@ -355,11 +358,12 @@ public class Human extends Element
 				int xB = ((Element)neighbours.get(i)).x;
 				int yB = ((Element)neighbours.get(i)).y;
 				double distance = Math.sqrt(Math.pow(xB - this.x, 2) + Math.pow(yB - this.y, 2));
-				if(distance > (this.perception + 1))
+				if((int)distance > (this.perception + 1))
 				{
-					distance = Math.abs(this.environment.gridWidth - distance);
+					distance = Math.abs(this.environment.gridWidth - (int)distance);
 				}
-				result.get((int)distance).add(object);
+				if((int)distance < result.size())
+					result.get((int)distance).add(object);
 			}
 		}
 		
@@ -496,85 +500,93 @@ public class Human extends Element
 			{
 				if(this.y < c) // Move up
 				{
+					this.setImage(Direction.TOP, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y + 1));
 						y = env.grid.sty(y + 1);
 					}
-					this.setImage(Direction.TOP);
+					this.direction = Direction.TOP;
 				}
 				else if(this.y > c) // Move down
 				{
+					this.setImage(Direction.BOTTOM, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x), env.grid.sty(y - 1));
 						y = env.grid.sty(y - 1);
 					}
-					this.setImage(Direction.BOTTOM);
+					this.direction = Direction.BOTTOM;
 				}
 			}
 			else if(c == this.y) // If we are on the same row
 			{
 				if(this.x < l) // Move right
 				{
+					this.setImage(Direction.RIGHT, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y));
 						x = env.grid.stx(x + 1);
 					}
-					this.setImage(Direction.RIGHT);
+					this.direction = Direction.RIGHT;
 				}
 				else if(this.x > l) // Move left
 				{
+					this.setImage(Direction.LEFT, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x - 1), env.grid.sty(y));
 						x = env.grid.stx(x - 1);
 					}
-					this.setImage(Direction.LEFT);
+					this.direction = Direction.LEFT;
 				}
 			}
 			else
 			{
 				if(this.x < l && this.y < c) // Move down left
 				{
+					this.setImage(Direction.BOTTOM, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y + 1));
 						x = env.grid.stx(x + 1);
 						y = env.grid.sty(y + 1);
 					}
-					this.setImage(Direction.BOTTOM);
+					this.direction = Direction.BOTTOM;
 				}
 				else if(this.x < l && this.y > c) // Move up left
 				{
+					this.setImage(Direction.TOP, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y - 1));
 						x = env.grid.stx(x + 1);
 						y = env.grid.sty(y - 1);
 					}
-					this.setImage(Direction.TOP);
+					this.direction = Direction.TOP;
 				}
 				else if(this.x > l && this.y < c) // Move down right
 				{
+					this.setImage(Direction.BOTTOM, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x - 1), env.grid.sty(y + 1));
 						x = env.grid.stx(x - 1);
 						y = env.grid.sty(y + 1);
 					}
-					this.setImage(Direction.BOTTOM);
+					this.direction = Direction.BOTTOM;
 				}
 				else if(this.x > l && this.y > c) // Move up right
 				{
+					this.setImage(Direction.TOP, false);
 					for(int i=0; i<this.speed; i++)
 					{
 						env.grid.setObjectLocation(this, env.grid.stx(x + 1), env.grid.sty(y + 1));
 						x = env.grid.stx(x + 1);
 						y = env.grid.sty(y + 1);
 					}
-					this.setImage(Direction.TOP);
+					this.direction = Direction.TOP;
 				}
 			}
 		}	
@@ -615,20 +627,20 @@ public class Human extends Element
 				this.direction = Direction.TOP;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y - randomB));
 				y = model.grid.sty(y - randomB);
-				this.setImage(Direction.TOP);
+				this.setImage(Direction.TOP, false);
 				break;
 			case BOTTOM:
 				this.direction = Direction.BOTTOM;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y + randomB));
 				y = model.grid.sty(y + randomB);
-				this.setImage(Direction.BOTTOM);
+				this.setImage(Direction.BOTTOM, false);
 				break;
 			case LEFT:
 				// LEFT
 				this.direction = Direction.LEFT;
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), y);
 				x = model.grid.stx(x - randomB);
-				this.setImage(Direction.LEFT);
+				this.setImage(Direction.LEFT, false);
 				break;
 			case TOPLEFT:
 				// TOPLEFT
@@ -636,7 +648,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y - randomB);
-				this.setImage(Direction.TOP);
+				this.setImage(Direction.TOP, false);
 				break;
 			case TOPRIGHT:
 				// TOPRIGHT
@@ -644,7 +656,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y - randomB);
-				this.setImage(Direction.TOP);
+				this.setImage(Direction.TOP, false);
 				break;
 			case BOTTOMLEFT:
 				// BOTTOMLEFT
@@ -652,7 +664,7 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y + randomB);
-				this.setImage(Direction.BOTTOM);
+				this.setImage(Direction.BOTTOM, false);
 				break;
 			case BOTTOMRIGHT:
 				// BOTTOMRIGHT
@@ -660,14 +672,14 @@ public class Human extends Element
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y + randomB);
-				this.setImage(Direction.BOTTOM);
+				this.setImage(Direction.BOTTOM, false);
 				break;
 			default:
 				// RIGHT
 				this.direction = Direction.RIGHT;
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), y);
 				x = model.grid.stx(x + randomB);
-				this.setImage(Direction.RIGHT);
+				this.setImage(Direction.RIGHT, false);
 				break;
 			}
 		this.numberOfRandom++;
@@ -683,27 +695,51 @@ public class Human extends Element
 		this.isBitten = true;
 	}
 	
-	public void setImage(Direction direction)
+	public void setImage(Direction direction, boolean shoot)
 	{
 		ImageIcon imageIcon = null;
 		
-		switch(direction)
+		if(!shoot)
 		{
-		case BOTTOM:
-			imageIcon = new ImageIcon("ressources/human_bottom.png");
-			break;
-		case TOP:
-			imageIcon = new ImageIcon("ressources/human_up.png");
-			break;
-		case LEFT:
-			imageIcon = new ImageIcon("ressources/human_left.png");
-			break;
-		case RIGHT:
-			imageIcon = new ImageIcon("ressources/human_right.png");
-			break;
-		default:
-			break;
+			switch(direction)
+			{
+			case BOTTOM:
+				imageIcon = new ImageIcon("ressources/human_bottom.png");
+				break;
+			case TOP:
+				imageIcon = new ImageIcon("ressources/human_up.png");
+				break;
+			case LEFT:
+				imageIcon = new ImageIcon("ressources/human_left.png");
+				break;
+			case RIGHT:
+				imageIcon = new ImageIcon("ressources/human_right.png");
+				break;
+			default:
+				break;
+			}
 		}
+		else
+		{
+			switch(direction)
+			{
+			case BOTTOM:
+				imageIcon = new ImageIcon("ressources/human_bottom_shoot.png");
+				break;
+			case TOP:
+				imageIcon = new ImageIcon("ressources/human_up_shoot.png");
+				break;
+			case LEFT:
+				imageIcon = new ImageIcon("ressources/human_left_shoot.png");
+				break;
+			case RIGHT:
+				imageIcon = new ImageIcon("ressources/human_right_shoot.png");
+				break;
+			default:
+				break;
+			}
+		}
+		
 		
 		if (environment == null) { System.out.println("ERROR-1"); }
 		if (environment.environmentUI == null) { System.out.println("ERROR-2"); }

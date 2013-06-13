@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
+
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
 import sim.portrayal.simple.ImagePortrayal2D;
@@ -26,7 +27,8 @@ public class Zombie extends Element
 	{
 		ARM,
 		LEG,
-		TRUNK;
+		TRUNK,
+		HEAD;
 	}
 	
 	@Override
@@ -140,6 +142,7 @@ public class Zombie extends Element
 	public void headShot()
 	{
 		this.isAlive = false;
+		setImage(direction, true, BODY_PART.HEAD);
 	}
 	
 	public void bodyShot(BODY_PART part)
@@ -148,13 +151,16 @@ public class Zombie extends Element
 		{
 			case ARM:
 				if(!this.isMaximumShot) this.speed--;
+				setImage(direction, true, BODY_PART.ARM);
 				break;
 			case LEG:
 				if(!this.isMaximumShot) this.speed--;
 				else this.isBlockedForOneStep = true;
+				setImage(direction, true, BODY_PART.LEG);
 				break;
 			case TRUNK:
 				if(!this.isMaximumShot) this.speed--;
+				setImage(direction, true, BODY_PART.TRUNK);
 				// ELSE : MOVE BACK 1 CASE
 				break;
 				default:
@@ -188,22 +194,20 @@ public class Zombie extends Element
 			{
 				if(this.y < c) // Move up
 				{
+					setImage(Constants.Direction.TOP, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y + 1));
 						y = model.grid.sty(y + 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("zombie_up.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.y > c) // Move down
 				{
+					setImage(Constants.Direction.BOTTOM, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x), model.grid.sty(y - 1));
 						y = model.grid.sty(y - 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 			}
@@ -211,22 +215,20 @@ public class Zombie extends Element
 			{
 				if(this.x < l) // Move right
 				{
+					setImage(Constants.Direction.RIGHT, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y));
 						x = model.grid.stx(x + 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_right.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x > l) // Move left
 				{
+					setImage(Constants.Direction.LEFT, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y));
 						x = model.grid.stx(x - 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_left.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 			}
@@ -234,46 +236,42 @@ public class Zombie extends Element
 			{
 				if(this.x < l && this.y < c) // Move down left
 				{
+					setImage(Constants.Direction.BOTTOM, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
 						x = model.grid.stx(x + 1);
 						y = model.grid.sty(y + 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x < l && this.y > c) // Move up left
 				{
+					setImage(Constants.Direction.TOP, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y - 1));
 						x = model.grid.stx(x + 1);
 						y = model.grid.sty(y - 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x > l && this.y < c) // Move down right
 				{
+					setImage(Constants.Direction.BOTTOM, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x - 1), model.grid.sty(y + 1));
 						x = model.grid.stx(x - 1);
 						y = model.grid.sty(y + 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 				else if(this.x > l && this.y > c) // Move up right
 				{
+					setImage(Constants.Direction.TOP, false, null);
 					for(int i=0; i<this.speed; i++)
 					{
 						model.grid.setObjectLocation(this, model.grid.stx(x + 1), model.grid.sty(y + 1));
 						x = model.grid.stx(x + 1);
 						y = model.grid.sty(y + 1);
-						this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
-						this.environment.environmentUI.display.repaint();
 					}
 				}
 			}
@@ -312,59 +310,52 @@ public class Zombie extends Element
 				this.direction = Constants.Direction.TOP;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y - randomB));
 				y = model.grid.sty(y - randomB);
-				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
-				this.environment.environmentUI.display.repaint();
+				setImage(direction, false, null);
 				break;
 			case BOTTOM:
 				this.direction = Constants.Direction.BOTTOM;
 				model.grid.setObjectLocation(this, x, model.grid.sty(y + randomB));
 				y = model.grid.sty(y + randomB);
-				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
-				this.environment.environmentUI.display.repaint();
+				setImage(direction, false, null);
 				break;
 			case LEFT:
 				// LEFT
 				this.direction = Constants.Direction.LEFT;
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), y);
 				x = model.grid.stx(x - randomB);
-				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_left.png")));
-				this.environment.environmentUI.display.repaint();
+				setImage(direction, false, null);
 				break;
 			case TOPLEFT:
 				// TOPLEFT
-				this.direction = Constants.Direction.LEFT;
+				this.direction = Constants.Direction.TOP;
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y - randomB);
-				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
-				this.environment.environmentUI.display.repaint();
+				setImage(direction, false, null);
 				break;
 			case TOPRIGHT:
 				// TOPRIGHT
-				this.direction = Constants.Direction.LEFT;
+				this.direction = Constants.Direction.TOP;
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y - randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y - randomB);
-				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_up.png")));
-				this.environment.environmentUI.display.repaint();
+				setImage(direction, false, null);
 				break;
 			case BOTTOMLEFT:
 				// BOTTOMLEFT
-				this.direction = Constants.Direction.LEFT;
+				this.direction = Constants.Direction.BOTTOM;
 				model.grid.setObjectLocation(this, model.grid.stx(x - randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x - randomB);
 				y = model.grid.sty(y + randomB);
-				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
-				this.environment.environmentUI.display.repaint();
+				setImage(direction, false, null);
 				break;
 			case BOTTOMRIGHT:
 				// BOTTOMRIGHT
-				this.direction = Constants.Direction.LEFT;
+				this.direction = Constants.Direction.BOTTOM;
 				model.grid.setObjectLocation(this, model.grid.stx(x + randomB), model.grid.sty(y + randomB));
 				x = model.grid.stx(x + randomB);
 				y = model.grid.sty(y + randomB);
-				this.environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/zombie_bottom.png")));
-				this.environment.environmentUI.display.repaint();
+				setImage(direction, false, null);
 				break;
 			default:
 				// RIGHT
@@ -384,6 +375,117 @@ public class Zombie extends Element
 		}
 		
 		return null;
+	}
+	
+	public void setImage(Constants.Direction direction, boolean hurt, BODY_PART bodyPart)
+	{
+		ImageIcon imageIcon = null;
+		
+		if(!hurt)
+		{
+			switch(direction)
+			{
+			case BOTTOM:
+				imageIcon = new ImageIcon("ressources/zombie_bottom.png");
+				break;
+			case TOP:
+				imageIcon = new ImageIcon("ressources/zombie_up.png");
+				break;
+			case LEFT:
+				imageIcon = new ImageIcon("ressources/zombie_left.png");
+				break;
+			case RIGHT:
+				imageIcon = new ImageIcon("ressources/zombie_right.png");
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			switch(direction)
+			{
+			case BOTTOM:
+				switch(bodyPart)
+				{
+				case ARM:
+					imageIcon = new ImageIcon("ressources/zombie_bottom_arm.png");
+					break;
+				case LEG:
+					imageIcon = new ImageIcon("ressources/zombie_bottom_leg.png");
+					break;
+				case TRUNK:
+					imageIcon = new ImageIcon("ressources/zombie_bottom_trunk.png");
+					break;
+				default:
+					imageIcon = new ImageIcon("ressources/zombie_bottom_head.png");
+					break;
+				}
+				break;
+			case TOP:
+				switch(bodyPart)
+				{
+				case ARM:
+					imageIcon = new ImageIcon("ressources/zombie_top_arm.png");
+					break;
+				case LEG:
+					imageIcon = new ImageIcon("ressources/zombie_top_leg.png");
+					break;
+				case TRUNK:
+					imageIcon = new ImageIcon("ressources/zombie_top_trunk.png");
+					break;
+				default:
+					imageIcon = new ImageIcon("ressources/zombie_top_head.png");
+					break;
+				}
+				break;
+			case LEFT:
+				switch(bodyPart)
+				{
+				case ARM:
+					imageIcon = new ImageIcon("ressources/zombie_left_arm.png");
+					break;
+				case LEG:
+					imageIcon = new ImageIcon("ressources/zombie_left_leg.png");
+					break;
+				case TRUNK:
+					imageIcon = new ImageIcon("ressources/zombie_left_trunk.png");
+					break;
+				default:
+					imageIcon = new ImageIcon("ressources/zombie_left_head.png");
+					break;
+				}
+				break;
+			case RIGHT:
+				switch(bodyPart)
+				{
+				case ARM:
+					imageIcon = new ImageIcon("ressources/zombie_right_arm.png");
+					break;
+				case LEG:
+					imageIcon = new ImageIcon("ressources/zombie_right_leg.png");
+					break;
+				case TRUNK:
+					imageIcon = new ImageIcon("ressources/zombie_right_trunk.png");
+					break;
+				default:
+					imageIcon = new ImageIcon("ressources/zombie_right_head.png");
+					break;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		
+		
+		if (environment == null) { System.out.println("ERROR-1"); }
+		if (environment.environmentUI == null) { System.out.println("ERROR-2"); }
+		if (environment.environmentUI.environmentPortrayal == null) { System.out.println("ERROR-3"); }
+		if (environment.environmentUI.display == null) { System.out.println("ERROR-4"); }
+		
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(imageIcon));
+		environment.environmentUI.display.repaint();
 	}
 
 	public int getNumberOfRandom()
