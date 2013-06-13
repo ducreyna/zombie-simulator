@@ -91,12 +91,12 @@ public class Human extends Element
 			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
 			neighboursArray = this.perception();
 			
-			if(this.munitions <= 5 || this.life <= 5)
+			if(this.munitions <= 10 || this.life <= 10 || this.isBitten)
 			{
 				// We need to find munitions or points of life
 				BonusPack bonusPack = null;
 				boolean bonusPackFound = false;
-				boolean zombieFound = false;
+				boolean doRandomMove = true;
 				int i, j;
 				
 				for(i = 0; i < neighboursArray.size(); i++)
@@ -105,19 +105,21 @@ public class Human extends Element
 					{
 						if(neighboursArray.get(i).get(j) instanceof Zombie)
 						{
-							if(this.munitions > 0 && life >= 3)
+							if(this.munitions > 0 && life >= 5)
 							{
 								if(i == 0 || i == 1)
 								{
 									// Zombie very close
-									zombieFound = true;
+//									doRandomMove = false;
 									shoot((Zombie) neighboursArray.get(i).get(j));
-									break;
+//									break;
 								}
 							}
 						}
 						else if(neighboursArray.get(i).get(j) instanceof BonusPack)
 						{
+							doRandomMove = false;
+							System.out.println("Il y a un bonus pack pas loin");
 							bonusPackFound = true;
 							bonusPack = (BonusPack) neighboursArray.get(i).get(j);
 							break;
@@ -128,6 +130,7 @@ public class Human extends Element
 					{
 						if(i == 0 || i == 1)
 						{
+							System.out.println("Je prends un bonus pack");
 							// We are enough close to pick up the bonus pack
 							// Weapon
 							if((bonusPack.getWeaponUpgrade() + this.weaponLevel) > Constants.HUMAN_WEAPON_LEVEL_MAX)
@@ -165,23 +168,30 @@ public class Human extends Element
 							bonusPack.stoppable.stop();
 							// Add a new Bonus pack on the map
 							environment.addBonusPack();
+							bonusPackFound = false;
+							bonusPack = null;
+							break;
 						}
 						else
 						{
+							System.out.println("Je me dirige vers un bonus pack");
 							// We move to the bonus pack
 							move(environment, bonusPack.x, bonusPack.y);
+							bonusPackFound = false;
+							bonusPack = null;
+							break;
 						}
-						bonusPackFound = false;
-						bonusPack = null;
-						break;
 					}
 					else
 					{
 						// We continue the research
-						randomMove(environment);
-						break;
+						doRandomMove = true;
+//						randomMove(environment);
+//						break;
 					}
 				}
+				if(doRandomMove)
+					randomMove(environment);
 			}
 			else
 			{

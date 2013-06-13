@@ -76,6 +76,7 @@ public class EnvironmentUI extends GUIState
         ImageIcon humanIcon = new ImageIcon("ressources/human_bottom.png");
         ImageIcon zombieIcon = new ImageIcon("ressources/zombie_bottom.png");
         ImageIcon bunkerIcon = new ImageIcon("ressources/bunker_2.png");
+        ImageIcon bonusIcon = new ImageIcon("ressources/bonus.png");
    
         environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon) {
         	public boolean handleMouseEvent(GUIState gui, Manipulating2D manipulating, LocationWrapper wrapper, MouseEvent event, DrawInfo2D fieldPortrayalDrawInfo, int type)
@@ -95,8 +96,9 @@ public class EnvironmentUI extends GUIState
         	}
         });
         environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));
-        environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Constants.BONUSPACK_COLOR));
+//        environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Constants.BONUSPACK_COLOR));
         environmentPortrayal.setPortrayalForClass(Bunker.class, new ImagePortrayal2D(bunkerIcon));
+        environmentPortrayal.setPortrayalForClass(BonusPack.class, new ImagePortrayal2D(bonusIcon));
         
 		// reschedule the displayer
 		display.reset();
