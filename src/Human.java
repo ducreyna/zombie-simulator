@@ -71,6 +71,11 @@ public class Human extends Element
 		
 		if(this.life >= 0)
 		{
+			if(myBunker != null)
+			{
+				// Human earns experience with his partners
+				XP ++;
+			}
 			// Weapon Upgrade
 			if(XP >= Constants.HUMAN_XP_MAX)
 			{
