@@ -84,11 +84,11 @@ public class EnvironmentUI extends GUIState
         		// TODO super.handleMouseEvent(gui, manipulating, wrapper, event, fieldPortrayalDrawInfo, type)
         		synchronized(gui.state.schedule)
         		{
-        			if (type == SimplePortrayal2D.TYPE_HIT_OBJECT && event.getID() == event.MOUSE_CLICKED)
+        			if (type == SimplePortrayal2D.TYPE_HIT_OBJECT && event.getID() == MouseEvent.MOUSE_CLICKED)
         			{
         				StableInt2D location = (StableInt2D) wrapper.getLocation();
-        				System.out.println("clic at "+location);
-        				environment.drawPerception(location.x, location.y, Constants.HUMAN_PERCEPTION_MAX);
+        				System.out.println("clic on a human at (x,y) : ("+location.getX()+","+location.getY()+")");
+        				environment.drawPerception(location.getX(), location.getY(), Constants.HUMAN_PERCEPTION_MAX);
         				return true;
         			}
         			else return false;

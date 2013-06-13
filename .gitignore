@@ -1,4 +1,5 @@
 *.class
+*.orig
 
 # Package Files #
 *.jar
@@ -10,7 +11,7 @@
 
 # GNU/Linux files
 .directory
-.*~
+*~
 
 # Eclipse files
 .classpath
