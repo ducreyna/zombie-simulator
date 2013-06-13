@@ -1,6 +1,5 @@
 import sim.engine.SimState;
 import sim.engine.Stoppable;
-import sim.field.grid.Grid2D;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
 import sim.util.Bag;
@@ -11,16 +10,18 @@ public class Environment extends SimState
 {
 	private static final long serialVersionUID = 1;
 
-	public int gridHeight = 30;
-	public int gridWidth = 30;
+
+	public int gridHeight = Constants.GRID_HEIGHT;
+	public int gridWidth = Constants.GRID_WIDTH;
+
 	public EnvironmentUI environmentUI;
 
-    public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // initial value : 0 // TODO
+    public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
 
-	private int humanCount;
-	private int zombieCount;
-	private int bonusPackCount;
+	private int humanCount = Constants.INIT_HUMAN_COUNT;
+	private int zombieCount = Constants.INIT_ZOMBIE_COUNT;
+	private int bonusPackCount = Constants.INIT_BONUSPACK_COUNT;
 
 	Human[] humans;
 	Zombie[] zombies;
@@ -46,41 +47,17 @@ public class Environment extends SimState
 		super.start();
 
 		// it's faster to make a new sparse field than to clear it
-		perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0); // TODO
+		perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 
-		setHumanCount(15);
-		setZombieCount(10);
-		setBonusPackCount(3);
+		setHumanCount(Constants.INIT_HUMAN_COUNT);
+		setZombieCount(Constants.INIT_ZOMBIE_COUNT);
+		setBonusPackCount(Constants.INIT_BONUSPACK_COUNT);
 
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];
 		bonusPacks = new BonusPack[bonusPackCount];
-		
-		// TODO
-		/*
-        humans[0] = new Human();			
-        addElement(humans[0], 8, 8);
-        IntBag xPosBag = new IntBag();
-        IntBag yPosBag = new IntBag();
-        grid.getHexagonalLocations(humans[0].x, humans[0].y, 1, SparseGrid2D.BOUNDED, true, xPosBag, yPosBag);
-        
-        for (int i = 0; i < xPosBag.size(); i++) {
-        	System.out.println("("+xPosBag.get(i)+","+yPosBag.get(i)+")");
-        }
 
-    	int[] _put;
-    	int x, y;
-    	// for each x and y position
-        for (int i = 0; i < xPosBag.size(); i++)
-        {
-			x = xPosBag.get(i);
-			y = yPosBag.get(i);
-			perceptionGrid.field[x][y] = 3;
-			System.out.println("("+x+","+y+")");
-        }
-        */
-		
 		// add randomly humans
 		for(int i = 0; i < humanCount; i++)
         {
@@ -91,7 +68,7 @@ public class Environment extends SimState
 	        addElement(humans[i], location.x, location.y);
         }
 
-		// add randomly zombies 
+		// add randomly zombies
 		for(int i = 0; i < zombieCount; i++)
         {
 	        zombies[i] = new Zombie();
@@ -187,11 +164,30 @@ public class Environment extends SimState
 	}
 
 	public boolean addElement(Element _e, int _x, int _y)
-    {							
+    {
 		_e.x = _x;
-		_e.y = _y;									
+		_e.y = _y;
 		Stoppable stoppable  = schedule.scheduleRepeating(_e);
 		_e.stoppable = stoppable;
+		//System.out.println("add element at ("+_x+","+_y+")");
 		return grid.setObjectLocation(_e, _x, _y);
+    }
+
+    public void drawPerception(int _x, int _y, int _dist)
+    {
+    	if (_x >= 0 && _y >= 0 && _dist > 0)
+    	{
+		    IntBag xPosBag = new IntBag();
+		    IntBag yPosBag = new IntBag();
+		    grid.getHexagonalLocations(_x, _y, _dist, SparseGrid2D.UNBOUNDED, true, xPosBag, yPosBag);
+
+			int x, y;
+		    for (int i = 0; i < xPosBag.size(); i++)
+		    {
+				x = xPosBag.get(i);
+				y = yPosBag.get(i);
+				perceptionGrid.field[grid.stx(x)][grid.sty(y)] = 3;
+		    }
+    	}
     }
 }
