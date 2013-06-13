@@ -110,7 +110,7 @@ public class Human extends Element
 								if(i == 0 || i == 1)
 								{
 									// Zombie very close
-//									doRandomMove = false;
+									doRandomMove = false;
 									shoot((Zombie) neighboursArray.get(i).get(j));
 //									break;
 								}
@@ -119,7 +119,6 @@ public class Human extends Element
 						else if(neighboursArray.get(i).get(j) instanceof BonusPack)
 						{
 							doRandomMove = false;
-							System.out.println("Il y a un bonus pack pas loin");
 							bonusPackFound = true;
 							bonusPack = (BonusPack) neighboursArray.get(i).get(j);
 							break;
@@ -130,7 +129,6 @@ public class Human extends Element
 					{
 						if(i == 0 || i == 1)
 						{
-							System.out.println("Je prends un bonus pack");
 							// We are enough close to pick up the bonus pack
 							// Weapon
 							if((bonusPack.getWeaponUpgrade() + this.weaponLevel) > Constants.HUMAN_WEAPON_LEVEL_MAX)
@@ -174,7 +172,6 @@ public class Human extends Element
 						}
 						else
 						{
-							System.out.println("Je me dirige vers un bonus pack");
 							// We move to the bonus pack
 							move(environment, bonusPack.x, bonusPack.y);
 							bonusPackFound = false;
@@ -198,6 +195,7 @@ public class Human extends Element
 				boolean doRandomMove = true;
 				boolean bunkerFound = false;
 				boolean zombieFound = false;
+				boolean bonusPackFound = false;
 				ArrayList<Human> humansGroup = new ArrayList<Human>();
 				Bunker bunker = null;
 				
@@ -246,6 +244,10 @@ public class Human extends Element
 							{
 								humansGroup.add((Human) neighboursArray.get(i).get(j));
 							}
+							else if(neighboursArray.get(i).get(j) instanceof BonusPack)
+							{
+								bonusPackFound = true;
+							}
 						}
 					}
 					
@@ -255,7 +257,7 @@ public class Human extends Element
 						if(!bunkerFound)
 						{
 							humansGroup.remove(this);
-							 if(humansGroup.size() >= 1 && !goAway)
+							 if(humansGroup.size() >= 1 && !goAway && !bonusPackFound)
 							 {
 								move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
 								humansGroup.add(this);
@@ -480,7 +482,7 @@ public class Human extends Element
 		double distance = Math.sqrt(Math.pow(l - this.x, 2) + Math.pow(c - this.y, 2));
 		
 		this.speed = (int)(Math.random() * (Constants.HUMAN_SPEED_MAX -1)) + 1;
-//		System.out.println((int)distance);
+
 		if((int)distance > 0 && (int)distance <= this.speed)
 		{
 			// We move directly to the case (l,c)
