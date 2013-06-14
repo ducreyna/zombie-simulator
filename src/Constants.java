@@ -4,11 +4,11 @@ import java.awt.Color;
 public class Constants
 {
 	// Constants for the environment
-	public static int GRID_HEIGHT = 20;
-	public static int GRID_WIDTH = 20;
-	public static int INIT_HUMAN_COUNT = 5;
-	public static int INIT_ZOMBIE_COUNT = 2;
-	public static int INIT_BONUSPACK_COUNT = 1;
+	public static int GRID_HEIGHT = 60;
+	public static int GRID_WIDTH = 60;
+	public static int INIT_HUMAN_COUNT = 15;
+	public static int INIT_ZOMBIE_COUNT = 20;
+	public static int INIT_BONUSPACK_COUNT = 10;
 	public static Color BONUSPACK_COLOR = Color.black;
 	
 	// Constants for the Human Class
