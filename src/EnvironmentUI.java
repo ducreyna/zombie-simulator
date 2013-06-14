@@ -95,9 +95,10 @@ public class EnvironmentUI extends GUIState
         		}
         	}
         });
-        environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));
-//        environmentPortrayal.setPortrayalForClass(BonusPack.class, new OvalPortrayal2D(Constants.BONUSPACK_COLOR));
-        environmentPortrayal.setPortrayalForClass(Bunker.class, new ImagePortrayal2D(bunkerIcon));
+        environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));  
+        ImagePortrayal2D image = new ImagePortrayal2D(bunkerIcon);
+        image.scale = 2.0;
+        environmentPortrayal.setPortrayalForClass(Bunker.class, image);
         environmentPortrayal.setPortrayalForClass(BonusPack.class, new ImagePortrayal2D(bonusIcon));
         
 		// reschedule the displayer

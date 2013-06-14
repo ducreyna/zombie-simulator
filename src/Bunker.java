@@ -79,7 +79,9 @@ public class Bunker extends Element
 		default:
 			break;
 		}
-		env.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(bunkerIcon));
+		ImagePortrayal2D imagePortRayal = new ImagePortrayal2D(bunkerIcon);
+		imagePortRayal.scale = 2.0;
+		env.environmentUI.environmentPortrayal.setPortrayalForObject(this, imagePortRayal);
 		env.environmentUI.display.repaint();
 	}
 	
@@ -122,7 +124,9 @@ public class Bunker extends Element
 			break;
 		}
 		
-		env.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(bunkerIcon));
+		ImagePortrayal2D imagePortRayal = new ImagePortrayal2D(bunkerIcon);
+		imagePortRayal.scale = 2.0;
+		env.environmentUI.environmentPortrayal.setPortrayalForObject(this, imagePortRayal);
 		env.environmentUI.display.repaint();
 	}
 	
