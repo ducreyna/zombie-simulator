@@ -87,7 +87,9 @@ public class EnvironmentUI extends GUIState
         			{
         				StableInt2D location = (StableInt2D) wrapper.getLocation();
         				System.out.println("clic on a human at (x,y) : ("+location.getX()+","+location.getY()+")");
-        				environment.drawPerception(location.getX(), location.getY(), Constants.HUMAN_PERCEPTION_MAX);
+        				boolean _draw;
+        				if (event.getButton() == MouseEvent.BUTTON1) { _draw = true; } else { _draw = false; }
+        				environment.drawPerception(location.getX(), location.getY(), Constants.HUMAN_PERCEPTION_MAX, _draw);
         			}
         			return super.handleMouseEvent(gui, manipulating, wrapper, event, fieldPortrayalDrawInfo, type);
         		}

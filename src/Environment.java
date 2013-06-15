@@ -173,7 +173,10 @@ public class Environment extends SimState
 		return grid.setObjectLocation(_e, _x, _y);
     }
 
-    public void drawPerception(int _x, int _y, int _dist)
+	/*
+	 * @param _draw true to delete perception color on the map
+	 */
+    public void drawPerception(int _x, int _y, int _dist, boolean _draw)
     {
     	if (_x >= 0 && _y >= 0 && _dist > 0)
     	{
@@ -186,7 +189,15 @@ public class Environment extends SimState
 		    {
 				x = xPosBag.get(i);
 				y = yPosBag.get(i);
-				perceptionGrid.field[grid.stx(x)][grid.sty(y)] = 3;
+				if (_draw)
+				{
+					perceptionGrid.field[grid.stx(x)][grid.sty(y)] = 3;
+				}
+				else
+				{
+					perceptionGrid.field[grid.stx(x)][grid.sty(y)] = 0;
+					environmentUI.display.repaint();
+				}
 		    }
     	}
     }
