@@ -16,7 +16,6 @@ import sim.portrayal.grid.HexaSparseGridPortrayal2D;
 import sim.portrayal.grid.HexaValueGridPortrayal2D;
 import sim.portrayal.inspector.StableInt2D;
 import sim.portrayal.simple.ImagePortrayal2D;
-import sim.portrayal.simple.OvalPortrayal2D;
 import sim.util.gui.ColorMap;
 import sim.util.gui.SimpleColorMap;
 
@@ -26,9 +25,8 @@ public class EnvironmentUI extends GUIState
 	public JFrame displayFrame;
 	public Environment environment;
 
-	HexaSparseGridPortrayal2D environmentPortrayal = new HexaSparseGridPortrayal2D();
-    HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception");
-
+	public HexaSparseGridPortrayal2D environmentPortrayal = new HexaSparseGridPortrayal2D();
+    public HexaValueGridPortrayal2D perceptionPortrayal = new HexaValueGridPortrayal2D("Perception");
 	
 	public static void main(String[] args)
 	{

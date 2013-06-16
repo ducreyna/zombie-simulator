@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
-
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
 import sim.portrayal.simple.ImagePortrayal2D;
@@ -50,7 +49,7 @@ public class Zombie extends Element
 			
 			if(this.neighboursArray.get(0).size() != 0)
 			{
-				// Bouffer humain ou dŽtruit bunker
+				// Bouffer humain ou dï¿½truit bunker
 				Bag bag = (Bag)this.neighboursArray.get(0);
 				Bunker possibleBunker = this.getBunkerFromBag(bag);
 				if(possibleBunker != null)
@@ -66,7 +65,7 @@ public class Zombie extends Element
 			} 
 			else if(this.neighboursArray.get(1).size() != 0)
 			{
-				// Bouffer human ou dŽtruit bunker
+				// Bouffer human ou dï¿½truit bunker
 				Bag bag = (Bag)this.neighboursArray.get(1);
 				Bunker possibleBunker = this.getBunkerFromBag(bag);
 				if(possibleBunker != null)

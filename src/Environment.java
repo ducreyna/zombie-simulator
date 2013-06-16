@@ -1,4 +1,6 @@
+import sim.engine.Schedule;
 import sim.engine.SimState;
+import sim.engine.Steppable;
 import sim.engine.Stoppable;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
@@ -87,7 +89,16 @@ public class Environment extends SimState
 
 			addElement(bonusPacks[i], location.x, location.y);
         }
-		// TODO : schedule.scheduleRepeating(...);
+		
+		// remove all perception when simulation runs
+		schedule.scheduleRepeating(Schedule.EPOCH, new Steppable() {
+			public void step(SimState state)
+			{
+				perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
+				environmentUI.display.repaint();
+				System.out.println("DONE");
+			}
+		});
 	}
 
 	public void setEnvironmentUI(EnvironmentUI environmentUI)
