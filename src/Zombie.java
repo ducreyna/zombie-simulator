@@ -478,13 +478,16 @@ public class Zombie extends Element
 		}
 		
 		
-		if (environment == null) { System.out.println("ERROR-1"); }
-		if (environment.environmentUI == null) { System.out.println("ERROR-2"); }
-		if (environment.environmentUI.environmentPortrayal == null) { System.out.println("ERROR-3"); }
-		if (environment.environmentUI.display == null) { System.out.println("ERROR-4"); }
+//		if (environment == null) { System.out.println("ERROR-1"); }
+//		if (environment.environmentUI == null) { System.out.println("ERROR-2"); }
+//		if (environment.environmentUI.environmentPortrayal == null) { System.out.println("ERROR-3"); }
+//		if (environment.environmentUI.display == null) { System.out.println("ERROR-4"); }
 		
-		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(imageIcon));
-		environment.environmentUI.display.repaint();
+		if(environment != null)
+		{
+			environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(imageIcon));
+			environment.environmentUI.display.repaint();
+		}
 	}
 
 	public int getNumberOfRandom()

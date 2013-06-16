@@ -9,6 +9,7 @@ import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.display.Manipulating2D;
 import sim.engine.SimState;
+import sim.field.grid.IntGrid2D;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.LocationWrapper;
 import sim.portrayal.SimplePortrayal2D;
@@ -75,6 +76,8 @@ public class EnvironmentUI extends GUIState
         ImageIcon zombieIcon = new ImageIcon("ressources/zombie_bottom.png");
         ImageIcon bunkerIcon = new ImageIcon("ressources/bunker_2.png");
         ImageIcon bonusIcon = new ImageIcon("ressources/bonus.png");
+        ImageIcon trapIcon = new ImageIcon("ressources/trap.png");
+        ImageIcon dogIcon = new ImageIcon("ressources/dog.png");
    
         environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon) {
         	public boolean handleMouseEvent(GUIState gui, Manipulating2D manipulating, LocationWrapper wrapper, MouseEvent event, DrawInfo2D fieldPortrayalDrawInfo, int type)
@@ -98,6 +101,8 @@ public class EnvironmentUI extends GUIState
         image.scale = 2.0;
         environmentPortrayal.setPortrayalForClass(Bunker.class, image);
         environmentPortrayal.setPortrayalForClass(BonusPack.class, new ImagePortrayal2D(bonusIcon));
+        environmentPortrayal.setPortrayalForClass(Trap.class, new ImagePortrayal2D(trapIcon));
+        environmentPortrayal.setPortrayalForClass(Dog.class, new ImagePortrayal2D(dogIcon));
         
 		// reschedule the displayer
 		display.reset();
@@ -134,7 +139,14 @@ public class EnvironmentUI extends GUIState
 		final int height = (int) ((n + 0.5) * scale);
 		final int width = (int) (((m - 1) * 3.0 / 4.0 + 1) * HEXAGONAL_RATIO * scale);
 
-		display = new Display2D(width, height, this);
+		display = new Display2D(width, height, this) {
+			@Override
+			public void step(SimState state) {
+				// remove all perceptions when simulation runs
+				environment.perceptionGrid.multiply(0);
+				super.step(state);
+			}
+		};
 		displayFrame = display.createFrame();
 		c.registerFrame(displayFrame);
 		displayFrame.setVisible(true);

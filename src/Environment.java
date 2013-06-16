@@ -89,16 +89,6 @@ public class Environment extends SimState
 
 			addElement(bonusPacks[i], location.x, location.y);
         }
-		
-		// remove all perception when simulation runs
-		schedule.scheduleRepeating(Schedule.EPOCH, new Steppable() {
-			public void step(SimState state)
-			{
-				perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
-				environmentUI.display.repaint();
-				System.out.println("DONE");
-			}
-		});
 	}
 
 	public void setEnvironmentUI(EnvironmentUI environmentUI)
