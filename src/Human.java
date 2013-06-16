@@ -775,13 +775,7 @@ public class Human extends Element
 			}
 		}
 		
-		
-		if (environment == null) { System.out.println("ERROR-1"); }
-		if (environment.environmentUI == null) { System.out.println("ERROR-2"); }
-		if (environment.environmentUI.environmentPortrayal == null) { System.out.println("ERROR-3"); }
-		if (environment.environmentUI.display == null) { System.out.println("ERROR-4"); }
-		
-		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(imageIcon));
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2DForHuman(imageIcon, environment));
 		environment.environmentUI.display.repaint();
 	}
 	
@@ -799,7 +793,7 @@ public class Human extends Element
 	 */
 	public void show()
 	{
-		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("ressources/human_bottom.png")));
+		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2DForHuman(new ImageIcon("ressources/human_bottom.png"), environment));
 		environment.environmentUI.display.repaint();
 	}
 

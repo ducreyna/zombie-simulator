@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -7,15 +6,9 @@ import javax.swing.JFrame;
 import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
-import sim.display.Manipulating2D;
 import sim.engine.SimState;
-import sim.field.grid.IntGrid2D;
-import sim.portrayal.DrawInfo2D;
-import sim.portrayal.LocationWrapper;
-import sim.portrayal.SimplePortrayal2D;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
 import sim.portrayal.grid.HexaValueGridPortrayal2D;
-import sim.portrayal.inspector.StableInt2D;
 import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.gui.ColorMap;
 import sim.util.gui.SimpleColorMap;
@@ -79,23 +72,7 @@ public class EnvironmentUI extends GUIState
         ImageIcon trapIcon = new ImageIcon("ressources/trap.png");
         ImageIcon dogIcon = new ImageIcon("ressources/dog.png");
    
-        environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon) {
-        	public boolean handleMouseEvent(GUIState gui, Manipulating2D manipulating, LocationWrapper wrapper, MouseEvent event, DrawInfo2D fieldPortrayalDrawInfo, int type)
-        	{
-        		synchronized(gui.state.schedule)
-        		{
-        			if (type == SimplePortrayal2D.TYPE_HIT_OBJECT && event.getID() == MouseEvent.MOUSE_CLICKED)
-        			{
-        				StableInt2D location = (StableInt2D) wrapper.getLocation();
-        				System.out.println("clic on a human at (x,y) : ("+location.getX()+","+location.getY()+")");
-        				boolean _draw;
-        				if (event.getButton() == MouseEvent.BUTTON1) { _draw = true; } else { _draw = false; }
-        				environment.drawPerception(location.getX(), location.getY(), Constants.HUMAN_PERCEPTION_MAX, _draw);
-        			}
-        			return super.handleMouseEvent(gui, manipulating, wrapper, event, fieldPortrayalDrawInfo, type);
-        		}
-        	}
-        });
+        environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2DForHuman(humanIcon, environment));
         environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));  
         ImagePortrayal2D image = new ImagePortrayal2D(bunkerIcon);
         image.scale = 2.0;

@@ -1,6 +1,4 @@
-import sim.engine.Schedule;
 import sim.engine.SimState;
-import sim.engine.Steppable;
 import sim.engine.Stoppable;
 import sim.field.grid.IntGrid2D;
 import sim.field.grid.SparseGrid2D;
