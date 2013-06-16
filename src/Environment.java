@@ -17,11 +17,12 @@ public class Environment extends SimState
 	public EnvironmentUI environmentUI;
 
     public IntGrid2D perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
+    public IntGrid2D transformationGrid = new IntGrid2D(gridWidth, gridHeight, 0);
 	public SparseGrid2D grid = new SparseGrid2D(gridWidth, gridHeight);
 
-	private int humanCount = Constants.INIT_HUMAN_COUNT;
-	private int zombieCount = Constants.INIT_ZOMBIE_COUNT;
-	private int bonusPackCount = Constants.INIT_BONUSPACK_COUNT;
+	public int humanCount = Constants.INIT_HUMAN_COUNT;
+	public int zombieCount = Constants.INIT_ZOMBIE_COUNT;
+	public int bonusPackCount = Constants.INIT_BONUSPACK_COUNT;
 
 	Human[] humans;
 	Zombie[] zombies;
@@ -48,16 +49,17 @@ public class Environment extends SimState
 
 		// it's faster to make a new sparse field than to clear it
 		perceptionGrid = new IntGrid2D(gridWidth, gridHeight, 0);
+		transformationGrid = new IntGrid2D(gridWidth, gridHeight, 0);
 		grid = new SparseGrid2D(gridWidth, gridHeight);
 
 		setHumanCount(Constants.INIT_HUMAN_COUNT);
 		setZombieCount(Constants.INIT_ZOMBIE_COUNT);
 		setBonusPackCount(Constants.INIT_BONUSPACK_COUNT);
-
+		
 		humans = new Human[humanCount];
 		zombies = new Zombie[zombieCount];
 		bonusPacks = new BonusPack[bonusPackCount];
-
+		
 		// add randomly humans
 		for(int i = 0; i < humanCount; i++)
         {
@@ -92,16 +94,6 @@ public class Environment extends SimState
 	public void setEnvironmentUI(EnvironmentUI environmentUI)
 	{
 		this.environmentUI = environmentUI;
-	}
-
-	public int getGridHeight()
-	{
-		return gridHeight;
-	}
-
-	public int getGridWidth()
-	{
-		return gridWidth;
 	}
 
 	public int getHumanCount()
@@ -190,7 +182,7 @@ public class Environment extends SimState
 				y = yPosBag.get(i);
 				if (_draw)
 				{
-					perceptionGrid.field[grid.stx(x)][grid.sty(y)] = 3;
+					perceptionGrid.field[grid.stx(x)][grid.sty(y)] = 2;
 				}
 				else
 				{

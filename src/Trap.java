@@ -11,4 +11,9 @@ public class Trap extends Element
 		
 	}
 
+	@Override
+	public String toString()
+	{
+		return new String("Trap");
+	}
 }

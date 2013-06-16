@@ -7,6 +7,7 @@ import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
+import sim.portrayal.Inspector;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
 import sim.portrayal.grid.HexaValueGridPortrayal2D;
 import sim.portrayal.simple.ImagePortrayal2D;
@@ -41,6 +42,18 @@ public class EnvironmentUI extends GUIState
 	{
 		return "Zombies invasion simulator";
 	}
+	
+	public Object getSimulationInspectedObject()
+	{
+		return state;
+	}
+	
+	public Inspector getInspector()
+	{
+		Inspector i = super.getInspector();
+		i.setVolatile(true);
+		return i;
+	}
 
 	public void start()
 	{
@@ -59,7 +72,6 @@ public class EnvironmentUI extends GUIState
 		environment = (Environment) state;
 		environment.setEnvironmentUI(this);
 		
-		// TODO
         ColorMap map = new SimpleColorMap(0, 10, Color.green, Color.red);
         perceptionPortrayal.setField(environment.perceptionGrid);
         perceptionPortrayal.setMap(map);
@@ -120,7 +132,7 @@ public class EnvironmentUI extends GUIState
 			@Override
 			public void step(SimState state) {
 				// remove all perceptions when simulation runs
-				environment.perceptionGrid.multiply(0);
+				environment.perceptionGrid.setTo(environment.transformationGrid);
 				super.step(state);
 			}
 		};
