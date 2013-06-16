@@ -440,7 +440,7 @@ public class Human extends Element
 			{
 			case 1:
 				// Touch a leg
-				if(myBunker != null && myBunker.getLevel() >= 4)
+				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
 					// TODO soigner zombie
 				}
@@ -452,7 +452,7 @@ public class Human extends Element
 				break;
 			case 2:
 				// Touch an arm
-				if(myBunker != null && myBunker.getLevel() >= 4)
+				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
 					// TODO soigner zombie
 				}
@@ -464,7 +464,7 @@ public class Human extends Element
 				break;
 			case 3:
 				// Touch a trunk
-				if(myBunker != null && myBunker.getLevel() >= 4)
+				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
 					// TODO soigner zombie
 				}
@@ -476,7 +476,7 @@ public class Human extends Element
 				break;
 			case 4:
 				// Headshot
-				if(myBunker != null && myBunker.getLevel() >= 4)
+				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
 					// TODO soigner zombie
 				}
