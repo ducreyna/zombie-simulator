@@ -8,7 +8,6 @@ import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.Bag;
 import sim.util.IntBag;
 
-
 public class Human extends Element
 {
 	private int speed = Constants.HUMAN_SPEED_MAX;
@@ -186,6 +185,7 @@ public class Human extends Element
 							
 							// Removing bonus pack
 							environment.grid.remove(bonusPack);
+							environment.bonusPackCount--;
 							bonusPack.stoppable.stop();
 							// Add a new Bonus pack on the map
 							environment.addBonusPack();
@@ -365,6 +365,7 @@ public class Human extends Element
 		{
 			environment.addZombie(x, y);
 			environment.grid.remove(this);
+			environment.humanCount--;
 			this.stoppable.stop();
 		}
 	}

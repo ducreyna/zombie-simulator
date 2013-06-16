@@ -38,6 +38,7 @@ public class Zombie extends Element
 		if(!this.isAlive)
 		{
 			environment.grid.remove(this);
+			environment.zombieCount--;
 			this.stoppable.stop();
 		}
 		else if(!this.isBlockedForOneStep)

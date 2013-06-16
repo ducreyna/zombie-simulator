@@ -7,8 +7,10 @@ import sim.display.Controller;
 import sim.display.Display2D;
 import sim.display.GUIState;
 import sim.engine.SimState;
+import sim.portrayal.Inspector;
 import sim.portrayal.grid.HexaSparseGridPortrayal2D;
 import sim.portrayal.grid.HexaValueGridPortrayal2D;
+import sim.portrayal.simple.CircledPortrayal2D;
 import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.gui.ColorMap;
 import sim.util.gui.SimpleColorMap;
@@ -40,6 +42,18 @@ public class EnvironmentUI extends GUIState
 	public static String getName()
 	{
 		return "Zombies invasion simulator";
+	}
+	
+	public Object getSimulationInspectedObject()
+	{
+		return state;
+	}
+	
+	public Inspector getInspector()
+	{
+		Inspector i = super.getInspector();
+		i.setVolatile(true);
+		return i;
 	}
 
 	public void start()
