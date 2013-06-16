@@ -504,4 +504,9 @@ public class Zombie extends Element
 	{
 		return isBlockedForOneStep;
 	}
+	
+	public String toString()
+	{
+		return new String("Zombie");
+	}
 }

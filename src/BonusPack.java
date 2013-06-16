@@ -29,9 +29,13 @@ public class BonusPack extends Element
 		return life;
 	}
 
-
 	public int getWeaponUpgrade()
 	{
 		return weaponUpgrade;
+	}
+	
+	public String toString()
+	{
+		return new String("Bonus Pack");
 	}
 }

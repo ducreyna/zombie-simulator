@@ -841,4 +841,9 @@ public class Human extends Element
 	{
 		this.myBunker = myBunker;
 	}
+	
+	public String toString()
+	{
+		return new String("Human");
+	}
 }

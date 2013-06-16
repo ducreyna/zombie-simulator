@@ -322,4 +322,9 @@ public class Bunker extends Element
 	{
 		return vaccinAvailable;
 	}
+	
+	public String toString()
+	{
+		return new String("Bunker");
+	}
 }
