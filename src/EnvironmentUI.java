@@ -77,6 +77,8 @@ public class EnvironmentUI extends GUIState
         ImageIcon zombieIcon = new ImageIcon("ressources/zombie_bottom.png");
         ImageIcon bunkerIcon = new ImageIcon("ressources/bunker_2.png");
         ImageIcon bonusIcon = new ImageIcon("ressources/bonus.png");
+        ImageIcon trapIcon = new ImageIcon("ressources/trap.png");
+        ImageIcon dogIcon = new ImageIcon("ressources/dog.png");
    
         environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2D(humanIcon) {
         	public boolean handleMouseEvent(GUIState gui, Manipulating2D manipulating, LocationWrapper wrapper, MouseEvent event, DrawInfo2D fieldPortrayalDrawInfo, int type)
@@ -100,6 +102,8 @@ public class EnvironmentUI extends GUIState
         image.scale = 2.0;
         environmentPortrayal.setPortrayalForClass(Bunker.class, image);
         environmentPortrayal.setPortrayalForClass(BonusPack.class, new ImagePortrayal2D(bonusIcon));
+        environmentPortrayal.setPortrayalForClass(Trap.class, new ImagePortrayal2D(trapIcon));
+        environmentPortrayal.setPortrayalForClass(Dog.class, new ImagePortrayal2D(dogIcon));
         
 		// reschedule the displayer
 		display.reset();

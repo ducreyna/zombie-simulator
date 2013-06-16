@@ -17,6 +17,7 @@ public class Human extends Element
 	private int weaponLevel = 1;//(int)(Math.random() * (Constants.HUMAN_WEAPON_LEVEL_MAX - 1)) + 1;
 	private int munitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
 	private int maxMunitions = Constants.HUMAN_MUNITIONS_MAX_LEVEL_1;
+	private int nbTraps = Constants.HUMAN_TRAPS_MAX;
 	private int XP = 0;
 	
 	enum Direction
@@ -53,7 +54,7 @@ public class Human extends Element
 		
 		if(firstTime)
 		{
-			weaponLevel = (int)(Math.random() * (Constants.HUMAN_WEAPON_LEVEL_MAX - 1)) + 1;
+			weaponLevel = (int)(Math.random() * (Constants.HUMAN_WEAPON_LEVEL_MAX - 2)) + 1;
 			upgradeWeapon();
 			firstTime = false;
 		}
@@ -71,10 +72,31 @@ public class Human extends Element
 		
 		if(this.life >= 0)
 		{
+			if(nbTraps > 0)
+			{
+				int randomSetUpTrap = (int)(Math.random() * 2);
+				if(randomSetUpTrap == 1)
+				{
+					// Success to set up a trap
+					boolean objectFound = false;
+					Bag objects = environment.grid.getObjectsAtLocation(x, y);
+					for(int i = 0; i < objects.size(); i++)
+					{
+						if(objects.get(i) instanceof Bunker || objects.get(i) instanceof BonusPack)
+						{
+							objectFound = true;
+						}
+					}
+					if(!objectFound)
+						environment.addElement(new Trap(), x, y);
+				}
+				nbTraps --;
+			}
+			
 			if(myBunker != null)
 			{
 				// Human earns experience with his partners
-				XP ++;
+//				XP ++;
 			}
 			// Weapon Upgrade
 			if(XP >= Constants.HUMAN_XP_MAX)
@@ -257,19 +279,30 @@ public class Human extends Element
 					if(i == 0  && !zombieFound)
 					{
 						// Elements on the same case
-						if(!bunkerFound)
+						if(!bunkerFound && !bonusPackFound)
 						{
 							humansGroup.remove(this);
-							 if(humansGroup.size() >= 1 && !goAway && !bonusPackFound)
+							 if(humansGroup.size() >= 1 && !goAway)
 							 {
-								move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
-								humansGroup.add(this);
-								Bunker buildBunker = new Bunker();
-//								buildBunker.setHumans(humansGroup);
-								environment.addElement(buildBunker, this.x, this.y);
-						        humansGroup.clear();
-						        this.hide();
-						        break;
+								 boolean constructBunker = false;
+								 Bag objects = environment.grid.getObjectsAtLocation(x, y);
+								 for(int k = 0; k < objects.size(); k++)
+								 {
+									 if(objects.get(k) instanceof Bunker || objects.get(k) instanceof Trap
+											 || objects.get(k) instanceof BonusPack)
+										 constructBunker = true;
+								 }
+								 if(!constructBunker)
+								 {
+//									move(environment, humansGroup.get(0).x, humansGroup.get(0).y);							 
+									humansGroup.add(this);
+									Bunker buildBunker = new Bunker();
+									buildBunker.setHumans(humansGroup);
+									environment.addElement(buildBunker, this.x, this.y);
+							        humansGroup.clear();
+							        this.hide();
+							        break;
+								 }
 							 }
 							 else
 							 {
@@ -280,13 +313,15 @@ public class Human extends Element
 						else if(!bunker.isInBunker(this) && !bunker.isFull())
 						{
 							// We integrate the bunker
-							bunker.upgrade(this, environment);
-							myBunker = bunker;
-							this.hide();
-							move(environment, bunker.x, bunker.y);
-							bunkerFound = false;
-							bunker = null;
-							break;
+							if(bunker.upgrade(this, environment))
+							{
+								myBunker = bunker;
+								this.hide();
+								move(environment, bunker.x, bunker.y);
+								bunkerFound = false;
+								bunker = null;
+								break;
+							}
 						}
 					}
 					else if(!zombieFound)

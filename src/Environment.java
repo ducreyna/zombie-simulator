@@ -87,7 +87,6 @@ public class Environment extends SimState
 
 			addElement(bonusPacks[i], location.x, location.y);
         }
-		// TODO : schedule.scheduleRepeating(...);
 	}
 
 	public void setEnvironmentUI(EnvironmentUI environmentUI)
