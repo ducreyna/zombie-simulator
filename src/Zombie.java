@@ -15,12 +15,17 @@ public class Zombie extends Element
 	private boolean isMaximumShot = false;
 	private boolean isAlive = true;
 	private boolean isBlockedForOneStep = false;
+	private boolean isVaccinated = false;
+	private boolean isTrapped = false;
+	private int trapTime = 10;
+	private int vaccinTime = 3;
 	private Constants.Direction direction = Constants.Direction.RIGHT;
 	private int numberOfRandom = 0;
 	private Bag neighbours = new Bag();
 	private IntBag neighboursX = new IntBag();
 	private IntBag neighboursY = new IntBag();
 	private ArrayList<Bag> neighboursArray = new ArrayList<Bag>();
+	private Trap currentTrap;
 	
 	public enum BODY_PART
 	{
@@ -41,8 +46,14 @@ public class Zombie extends Element
 			environment.zombieCount--;
 			this.stoppable.stop();
 		}
-		else if(!this.isBlockedForOneStep)
+		else if(!this.isBlockedForOneStep && this.vaccinTime > 0 && !this.isTrapped)
 		{
+			if(this.isVaccinated)
+			{
+				this.vaccinTime--;
+				
+				if(vaccinTime == 0) this.transformToHuman();
+			}
 			environment.grid.getHexagonalNeighbors(x, y, this.perception, SparseGrid2D.TOROIDAL, neighbours, neighboursX, neighboursY);
 			
 			
@@ -50,18 +61,33 @@ public class Zombie extends Element
 			
 			if(this.neighboursArray.get(0).size() != 0)
 			{
-				// Bouffer humain ou d�truit bunker
 				Bag bag = (Bag)this.neighboursArray.get(0);
-				Bunker possibleBunker = this.getBunkerFromBag(bag);
-				if(possibleBunker != null)
+				for(Object elt : bag)
 				{
-					int damage = 2;
-					possibleBunker.attack(damage);
+					if(elt instanceof Trap) {
+						this.isTrapped = true;
+						this.currentTrap = (Trap)elt;
+						this.currentTrap.zombieTrapped = this;
+						break;
+					}
 				}
-				else
+				
+
+				if(!this.isTrapped)
 				{
-					int damage = 2;
-					((Human)bag.get(0)).attack(damage);
+					// Bouffer humain ou d�truit bunker
+					
+					Bunker possibleBunker = this.getBunkerFromBag(bag);
+					if(possibleBunker != null)
+					{
+						int damage = 2;
+						possibleBunker.attack(damage);
+					}
+					else
+					{
+						int damage = 2;
+						((Human)bag.get(0)).attack(damage);
+					}
 				}
 			} 
 			else if(this.neighboursArray.get(1).size() != 0)
@@ -82,14 +108,14 @@ public class Zombie extends Element
 			}
 			else
 			{
-				Boolean loopFinished = true;
+				Boolean loopFinished = false;
 				for(Bag bag : this.neighboursArray)
 				{
 					if(bag.size() != 0)
 					{
 						Element elt = (Element)bag.get(0);
 						this.move(this.environment, elt.x, elt.y);
-						loopFinished = false;
+						loopFinished = true;
 						break;
 					}
 				}
@@ -100,10 +126,109 @@ public class Zombie extends Element
 				}
 			}	
 		}
-		else
+		else if(this.isBlockedForOneStep && this.vaccinTime > 0)
 		{
 			this.isBlockedForOneStep = false;
 		}
+		else if(this.isTrapped)
+		{
+				this.trapTime--;
+				
+				if(this.trapTime == 0)
+				{
+					this.isTrapped = false;
+					this.trapTime = 10;	
+					
+					this.environment.grid.remove(this.currentTrap);
+					this.currentTrap.stoppable.stop();
+					this.currentTrap = null;
+				}
+		}
+
+	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+
+	public int getPerception() {
+		return perception;
+	}
+
+	public void setPerception(int perception) {
+		this.perception = perception;
+	}
+
+	public boolean isMaximumShot() {
+		return isMaximumShot;
+	}
+
+	public void setMaximumShot(boolean isMaximumShot) {
+		this.isMaximumShot = isMaximumShot;
+	}
+
+	public boolean isAlive() {
+		return isAlive;
+	}
+
+	public void setAlive(boolean isAlive) {
+		this.isAlive = isAlive;
+	}
+
+	public boolean isVaccinated() {
+		return isVaccinated;
+	}
+
+	public void setVaccinated(boolean isVaccinated) {
+		this.isVaccinated = isVaccinated;
+	}
+
+	public boolean isTrapped() {
+		return isTrapped;
+	}
+
+	public void setTrapped(boolean isTrapped) {
+		this.isTrapped = isTrapped;
+	}
+
+	public int getTrapTime() {
+		return trapTime;
+	}
+
+	public void setTrapTime(int trapTime) {
+		this.trapTime = trapTime;
+	}
+
+	public int getVaccinTime() {
+		return vaccinTime;
+	}
+
+	public void setVaccinTime(int vaccinTime) {
+		this.vaccinTime = vaccinTime;
+	}
+
+	public Constants.Direction getDirection() {
+		return direction;
+	}
+
+	public void setDirection(Constants.Direction direction) {
+		this.direction = direction;
+	}
+
+	public Trap getCurrentTrap() {
+		return currentTrap;
+	}
+
+	public void setCurrentTrap(Trap currentTrap) {
+		this.currentTrap = currentTrap;
+	}
+
+	public void setBlockedForOneStep(boolean isBlockedForOneStep) {
+		this.isBlockedForOneStep = isBlockedForOneStep;
 	}
 
 	private ArrayList<Bag> perception()
@@ -123,7 +248,7 @@ public class Zombie extends Element
 		for(int i=1; i < neighbours.size(); i++)
 		{
 			Object object = neighbours.get(i);
-			if((object instanceof Human) || (object instanceof Bunker))
+			if((object instanceof Human) || (object instanceof Bunker) || (object instanceof Trap))
 			{
 				int xB = ((Element)neighbours.get(i)).x;
 				int yB = ((Element)neighbours.get(i)).y;
@@ -132,7 +257,11 @@ public class Zombie extends Element
 				{ 
 					distance = Math.abs(this.environment.gridWidth - distance);
 				}
-				result.get((int)distance).add(object);
+				if((int)distance < result.size())
+				{
+					if(!((object instanceof Trap) && (int)distance != 0))
+					result.get((int)distance).add(object);
+				}
 			}
 		}
 		
@@ -166,6 +295,17 @@ public class Zombie extends Element
 				default:
 					break;
 		}
+		
+		if(this.speed == 1) this.isMaximumShot = true;
+	}
+	
+	public void transformToHuman()
+	{
+		environment.addHuman(this.x, this.y);
+		environment.grid.remove(this);
+		environment.zombieCount--;
+		environment.transformationGrid.field[environment.grid.stx(this.x)][environment.grid.sty(this.y)] = 8;
+		this.stoppable.stop();
 	}
 	
 	public void destroyBunker(Bunker bunker)
