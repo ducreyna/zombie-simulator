@@ -786,7 +786,6 @@ public class Human extends Element
 	 */
 	public void hide()
 	{
-		System.out.println("HIDE");
 		environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(new ImageIcon("")));
 		environment.environmentUI.display.repaint();
 	}
