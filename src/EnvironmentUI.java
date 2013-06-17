@@ -77,14 +77,6 @@ public class EnvironmentUI extends GUIState
 		{
 			public void step(SimState state)
 			{
-				// at this stage we're adding data to our chart.  We
-				// need an X value and a Y value.  Typically the X
-				// value is the schedule's timestamp.  The Y value
-				// is whatever data you're extracting from your 
-				// simulation.  For purposes of illustration, let's
-				// extract the number of steps from the schedule and
-				// run it through a sin wave.
-
 				double x = state.schedule.time(); 
 				double y1 = environment.humanCount;
 				double y2 = environment.zombieCount;
@@ -124,8 +116,8 @@ public class EnvironmentUI extends GUIState
 		ImageIcon trapIcon = new ImageIcon("ressources/trap.png");
 		ImageIcon dogIcon = new ImageIcon("ressources/dog.png");
 
-		environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2DForHuman(humanIcon, environment));
-		environmentPortrayal.setPortrayalForClass(Zombie.class, new ImagePortrayal2D(zombieIcon));  
+		environmentPortrayal.setPortrayalForClass(Human.class, new ImagePortrayal2DForHuman(humanIcon, environment));		
+		environmentPortrayal.setPortrayalForClass(Zombie.class, new SelectableImagePortrayal2D(zombieIcon, environment));
 		ImagePortrayal2D image = new ImagePortrayal2D(bunkerIcon);
 		image.scale = 2.0;
 		environmentPortrayal.setPortrayalForClass(Bunker.class, image);
@@ -176,6 +168,7 @@ public class EnvironmentUI extends GUIState
 				super.step(state);
 			}
 		};
+		display.setScale(2.3);
 		displayFrame = display.createFrame();
 		c.registerFrame(displayFrame);
 		displayFrame.setVisible(true);
