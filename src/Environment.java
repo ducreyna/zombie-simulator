@@ -146,16 +146,19 @@ public class Environment extends SimState
 	public boolean addBonusPack()
 	{
 		Int2D location = getEmpty2DLocation();
+		this.bonusPackCount++;
 		return addElement(new BonusPack(), location.x, location.y);
 	}
 
 	public boolean addZombie(int _x, int _y)
 	{
+		this.zombieCount++;
 		return addElement(new Zombie(), _x, _y);
 	}
 	
 	public boolean addHuman(int _x, int _y)
 	{
+		this.humanCount++;
 		return addElement(new Human(), _x, _y);
 	}
 
