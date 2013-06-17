@@ -3,7 +3,8 @@ import sim.engine.SimState;
 
 public class Trap extends Element
 {
-
+	public Zombie zombieTrapped;
+	
 	@Override
 	public void step(SimState arg0)
 	{
@@ -15,5 +16,13 @@ public class Trap extends Element
 	public String toString()
 	{
 		return new String("Trap");
+	}
+
+	public Zombie getZombieTrapped() {
+		return zombieTrapped;
+	}
+
+	public void setZombieTrapped(Zombie zombieTrapped) {
+		this.zombieTrapped = zombieTrapped;
 	}
 }

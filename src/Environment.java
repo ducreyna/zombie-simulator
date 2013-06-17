@@ -153,6 +153,11 @@ public class Environment extends SimState
 	{
 		return addElement(new Zombie(), _x, _y);
 	}
+	
+	public boolean addHuman(int _x, int _y)
+	{
+		return addElement(new Human(), _x, _y);
+	}
 
 	public boolean addElement(Element _e, int _x, int _y)
     {
