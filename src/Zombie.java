@@ -4,7 +4,6 @@ import javax.swing.ImageIcon;
 
 import sim.engine.SimState;
 import sim.field.grid.SparseGrid2D;
-import sim.portrayal.simple.ImagePortrayal2D;
 import sim.util.Bag;
 import sim.util.IntBag;
 
@@ -618,15 +617,9 @@ public class Zombie extends Element
 			}
 		}
 		
-		
-//		if (environment == null) { System.out.println("ERROR-1"); }
-//		if (environment.environmentUI == null) { System.out.println("ERROR-2"); }
-//		if (environment.environmentUI.environmentPortrayal == null) { System.out.println("ERROR-3"); }
-//		if (environment.environmentUI.display == null) { System.out.println("ERROR-4"); }
-		
 		if(environment != null)
 		{
-			environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new ImagePortrayal2D(imageIcon));
+			environment.environmentUI.environmentPortrayal.setPortrayalForObject(this, new SelectableImagePortrayal2D(imageIcon, environment));
 			environment.environmentUI.display.repaint();
 		}
 	}
