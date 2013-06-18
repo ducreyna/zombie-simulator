@@ -185,7 +185,7 @@ public class Human extends Element
 							
 							// Removing bonus pack
 							environment.grid.remove(bonusPack);
-							environment.bonusPackCount--;
+//							environment.bonusPackCount--;
 							bonusPack.stoppable.stop();
 							// Add a new Bonus pack on the map
 							environment.addBonusPack();
