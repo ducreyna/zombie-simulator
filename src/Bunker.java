@@ -143,6 +143,8 @@ public class Bunker extends Element
 						myDog.xTarget = zombie.x;
 						myDog.yTarget = zombie.y;
 						environment.addElement(myDog, x, y);
+						
+						trap.dogSend = myDog;
 //						System.out.println("Zombie sur un piege");
 						break;
 					}

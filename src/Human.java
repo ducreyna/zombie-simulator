@@ -366,7 +366,7 @@ public class Human extends Element
 			environment.addZombie(x, y);
 			environment.grid.remove(this);
 			environment.humanCount--;
-			environment.transformationGrid.field[environment.grid.stx(x)][environment.grid.sty(y)] = 8;
+			//environment.transformationGrid.field[environment.grid.stx(x)][environment.grid.sty(y)] = 8;
 			this.stoppable.stop();
 		}
 	}

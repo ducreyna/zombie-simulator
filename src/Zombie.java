@@ -84,8 +84,16 @@ public class Zombie extends Element
 					}
 					else
 					{
-						int damage = 2;
-						((Human)bag.get(0)).attack(damage);
+						int lower = 0;
+						int higher = 11;
+
+						int random = (int)(Math.random() * (higher-lower)) + lower;
+						
+						if(random > 0)
+						{
+							int damage = 2;
+							((Human)bag.get(0)).attack(damage);
+						}
 					}
 				}
 			} 
@@ -138,8 +146,7 @@ public class Zombie extends Element
 					this.isTrapped = false;
 					this.trapTime = 10;	
 					
-					this.environment.grid.remove(this.currentTrap);
-					this.currentTrap.stoppable.stop();
+					this.currentTrap.destroy();
 					this.currentTrap = null;
 				}
 		}
@@ -303,13 +310,8 @@ public class Zombie extends Element
 		environment.addHuman(this.x, this.y);
 		environment.grid.remove(this);
 		environment.zombieCount--;
-		environment.transformationGrid.field[environment.grid.stx(this.x)][environment.grid.sty(this.y)] = 8;
+		//environment.transformationGrid.field[environment.grid.stx(this.x)][environment.grid.sty(this.y)] = 8;
 		this.stoppable.stop();
-	}
-	
-	public void destroyBunker(Bunker bunker)
-	{
-		// TO DO : remove 2 point to bunker
 	}
 	
 	private void move(Environment model, int l, int c)
@@ -317,8 +319,8 @@ public class Zombie extends Element
 		this.numberOfRandom = 0;
 		int distance = Math.max(Math.abs(this.x - l), Math.abs(this.y - c));
 		
-//		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
-//		System.out.println((int)distance);
+		this.speed = (int)(Math.random() * Constants.HUMAN_SPEED_MAX) + 1;
+		System.out.println((int)distance);
 		
 		if(distance <= this.speed)
 		{
