@@ -141,5 +141,10 @@ public class Dog extends Element
 	{
 		return zombieTraped;
 	}
+	
+	public String toString()
+	{
+		return new String("Chien");
+	}
 
 }

@@ -185,7 +185,7 @@ public class Human extends Element
 							
 							// Removing bonus pack
 							environment.grid.remove(bonusPack);
-//							environment.bonusPackCount--;
+							environment.bonusPackCount--;
 							bonusPack.stoppable.stop();
 							// Add a new Bonus pack on the map
 							environment.addBonusPack();
@@ -444,19 +444,19 @@ public class Human extends Element
 				// Touch a leg
 				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
-					// TODO soigner zombie
+					zombie.setVaccinated(true);
 				}
 				else
 				{
 					zombie.bodyShot(Zombie.BODY_PART.LEG);
 				}
-				XP +=2;
+				XP += 2;
 				break;
 			case 2:
 				// Touch an arm
 				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
-					// TODO soigner zombie
+					zombie.setVaccinated(true);
 				}
 				else
 				{
@@ -468,7 +468,7 @@ public class Human extends Element
 				// Touch a trunk
 				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
-					// TODO soigner zombie
+					zombie.setVaccinated(true);
 				}
 				else
 				{
@@ -480,7 +480,7 @@ public class Human extends Element
 				// Headshot
 				if(myBunker != null && myBunker.isVaccinAvailable())
 				{
-					// TODO soigner zombie
+					zombie.setVaccinated(true);
 				}
 				else
 				{

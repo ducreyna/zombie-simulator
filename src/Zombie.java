@@ -84,16 +84,8 @@ public class Zombie extends Element
 					}
 					else
 					{
-						int lower = 0;
-						int higher = 11;
-
-						int random = (int)(Math.random() * (higher-lower)) + lower;
-						
-						if(random > 0)
-						{
-							int damage = 2;
-							((Human)bag.get(0)).attack(damage);
-						}
+						int damage = 2;
+						((Human)bag.get(0)).attack(damage);
 					}
 				}
 			} 

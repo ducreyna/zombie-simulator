@@ -68,10 +68,8 @@ public class EnvironmentUI extends GUIState
 		chart.removeAllSeries();
 		series1 = new org.jfree.data.xy.XYSeries("nombre d'humains", false);
 		series2 = new org.jfree.data.xy.XYSeries("nombre de zombies", false);
-		series3 = new org.jfree.data.xy.XYSeries("nombre de bonus", false);
 		chart.addSeries(series1, null);
 		chart.addSeries(series2, null);
-		chart.addSeries(series3, null);
 		chart.addLegend();
 		scheduleRepeatingImmediatelyAfter(new Steppable()
 		{
@@ -80,13 +78,11 @@ public class EnvironmentUI extends GUIState
 				double x = state.schedule.time(); 
 				double y1 = environment.humanCount;
 				double y2 = environment.zombieCount;
-				double y3 = environment.bonusPackCount;
 
 				if (x >= state.schedule.EPOCH && x < state.schedule.AFTER_SIMULATION)
 				{
 					series1.add(x, y1, true);
 					series2.add(x, y2, true);
-					series3.add(x, y3, true);
 					chart.updateChartLater(state.schedule.getSteps());
 				}
 			}
